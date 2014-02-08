@@ -4,19 +4,10 @@ import pygame
 
 
 class Tile(object):
-    __renderer = None
-    __image = None
-    __tile_width = 0
-    __tile_height = 0
-
-    __offset_x = 0
-    __offset_y = 0
-
-    __tile_x = 0
-    __tile_y = 0
+    __renderer = __image = __rect = None
+    __tile_width = __tile_height = __offset_x = __offset_y = __tile_x = __tile_y = 0
 
     def __init__(self, renderer, image, tile_width, tile_height, offset_x=0, offset_y=0):
-        # self.__surface = surface
         self.__renderer = renderer
         self.__image = image
         self.__tile_width = tile_width
@@ -30,10 +21,6 @@ class Tile(object):
 
     def get_coordinates(self):
         return self.__tile_x, self.__tile_y
-
-    def load_tile(self, image_name):
-        self.__image = pygame.image.load(image_name).convert_alpha()
-        return self
 
     def draw(self):
         self.__renderer.draw(self)
@@ -59,3 +46,10 @@ class Tile(object):
 
     def get_image(self):
         return self.__image
+
+    def set_rect(self, rect):
+        self.__rect = rect
+        return self
+
+    def get_rect(self):
+        return self.__rect

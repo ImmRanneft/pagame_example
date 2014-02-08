@@ -15,13 +15,10 @@ class Renderer(object):
     def draw(self, drawable):
         camera_x, camera_y = self.__camera.get_dest()
         cam_width, cam_height = self.__camera.get_dimensions()
-        if not(
-           drawable.get_x() < camera_x - cam_width * 3 / 2
-           or drawable.get_x() > camera_x + cam_width * 3 / 2
-           or drawable.get_y() < camera_y - cam_height * 3 / 2
-           or drawable.get_y() > camera_y + cam_height * 3 / 2):
-            rect = pygame.Rect((drawable.offset_x() * drawable.get_width(), drawable.offset_y() * drawable.get_height()), (drawable.get_width(), drawable.get_height()))
-            self.__surface.blit(drawable.get_image(), (drawable.get_x() - camera_x, drawable.get_y() - camera_y), rect)
+        # if camera_y < drawable.get_y() < camera_y + drawable.get_height()*2 + cam_height * 3/2  \
+        #    and camera_x -cam_width * 3/2 < drawable.get_x() < camera_x + cam_width * 3/2:
+        self.__surface.blit(drawable.get_image(), (drawable.get_x() - camera_x, drawable.get_y() - camera_y), drawable.get_rect())
+        # print(camera_x, drawable.get_x())
 
     def get_camera_dimensions(self):
         return self.__camera.get_dimensions()

@@ -4,14 +4,9 @@
 from slg import *
 from pygame.locals import *
 import pygame
+import math
 
-WIN_WIDTH = 640
-WIN_HEIGHT = 480
-DISPLAY = (WIN_WIDTH, WIN_HEIGHT)
 BACKGROUND_COLOR = "#004400"
-
-
-PLATFORM_COLOR = "#FF6262"
 
 
 class Camera(object):
@@ -21,7 +16,7 @@ class Camera(object):
     moving_x = moving_y = 0
     __left = __right = __top = __bottom = 0
 
-    MOVEMENT_SPEED = 50
+    MOVEMENT_SPEED = 40
     MOVEMENT_POSITIVE = 1
     MOVEMENT_NEGATIVE = -1
     MOVEMENT_STOP = 0
@@ -48,41 +43,43 @@ class Camera(object):
     def get_dimensions(self):
         return self.__width, self.__height
 
-    def set_limits(self, left, right, top, bottom):
-        self.__left, self.__right, self.__top, self.__bottom = left, right, top, bottom
-
     def update(self):
-        if self.__current_x + self.__width / 2 < self.__right or self.__current_x - self.__width / 2 > self.__left:
-            self.__current_x += self.moving_x * self.MOVEMENT_SPEED
-        ''' we have to check another situation cause y coordinate on screen grows in direction of bottom '''
-        new_y = self.__current_y + self.moving_y * self.MOVEMENT_SPEED
-        # print(self.moving_y)
-        if (self.moving_y < 1 and new_y < self.__top) or (self.moving_y > 1 and new_y + self.__height > self.__bottom):
-            self.__current_y += self.moving_y * self.MOVEMENT_SPEED
-        # print(self.__current_y, new_y, self.__top)
+        self.__current_x += self.moving_x * self.MOVEMENT_SPEED
+        self.__current_y += self.moving_y * self.MOVEMENT_SPEED
+
+    def get_bounds(self):
+        left = math.floor(self.__current_x / TILE_WIDTH - 1)
+        right = math.ceil((self.__current_x + self.__width) / TILE_WIDTH + 1)
+
+        top = math.floor(self.__current_y / TILE_HEIGHT * 4 - 2)
+        bottom = math.ceil((self.__current_y + self.__height) / TILE_HEIGHT * 4 + 2)
+
+        return left, right, top, bottom
 
 
 def main():
 
     pygame.init()
 
-    display = pygame.display.set_mode(DISPLAY, DOUBLEBUF)
-    color = (0, 0, 0)
+    videoinfo = pygame.display.Info()
+    DISPLAY = (videoinfo.current_w, videoinfo.current_h)
+
+    display = pygame.display.set_mode(DISPLAY, FULLSCREEN)
+
+    clr = (0, 0, 0)
     clock = pygame.time.Clock()
 
     camera = Camera(DISPLAY)
     renderer = Renderer(display, camera)
-    tile_group = TileGroup()
+    tile_group = TileGroup(MAP_WIDTH_IN_TILES, MAP_HEIGHT_IN_TILES)
     worldmap = Map(tile_group, renderer)
     worldmap.generate()
-    left, right, top, bottom = worldmap.get_world_bounding_box()
-    camera.set_limits(left, right, top, bottom)
-    camera.reset_camera_to(worldmap.get_world_center())
+    camera.reset_camera_to((0, 0))
+    tile_group.draw()
     # camera.reset_camera_to(tile_group.get(1).get_x(), tile_group.get(1).get_y())
 
     running = True
-    for t in tile_group.get():
-        print(t.get_coordinates())
+
     while running:
         for e in pygame.event.get():
             if e.type == KEYDOWN:
@@ -102,13 +99,16 @@ def main():
                 if e.key == K_LEFT or e.key == K_RIGHT:
                     camera.set_moving_x(camera.MOVEMENT_STOP)
                 if e.key == K_c:
-
-                    camera.reset_camera_to(worldmap.get_world_center())
+                    camera.reset_camera_to((0, 0))
         camera.update()
-        display.fill(color)
+        display.fill(clr)
+        left, right, top, bottom = camera.get_bounds()
+        tile_group.set_area(left, right, top, bottom)
         tile_group.draw()
+
         pygame.display.update()
-        clock.tick(16)
+        clock.tick(30)
+        # running = False
 
 if __name__ == "__main__":
     main()
