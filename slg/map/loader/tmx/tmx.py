@@ -14,6 +14,10 @@ class TmxLoader(object):
     __tiles = list()
     __objects = list()
     __map = None
+    __map_dimensions = [0, 0]
+    __tile_dimensions = [0, 0]
+    __orientation = 'staggered'
+
     # __data_dir = os.path.realpath(__file__)
 
     def __init__(self):
@@ -23,14 +27,24 @@ class TmxLoader(object):
     def load(self, map):
         print('Map ', map, 'loading')
         self.__map = minidom.parse(map)
+        self.__load_map()
         self.__load_sets()
         self.__load_tiles()
+
+    def __load_map(self):
+        # orientation="staggered" width="50" height="50" tilewidth="64" tileheight="32"
+        raw_map = self.__map.getElementsByTagName('map')[0]
+        self.__orientation = raw_map.attributes['orientation'].value
+        tile_width = int(raw_map.attributes['tilewidth'].value)
+        tile_height = int(raw_map.attributes['tileheight'].value) * 2
+        map_width = int(raw_map.attributes['width'].value)
+        map_height = int(raw_map.attributes['height'].value)
+        self.__map_dimensions = [map_width, map_height]
+        self.__tile_dimensions = [tile_width, tile_height]
 
     def __load_sets(self):
         i = 0
         for raw_tileset in self.__map.getElementsByTagName('tileset'):
-            # print(raw_tileset.attributes['firstgid'].value, raw_tileset.attributes['name'].value)
-            # exit()
             tileset = Tileset(raw_tileset.attributes['firstgid'].value, raw_tileset.attributes['name'].value, i)
             i += 1
 
@@ -56,7 +70,6 @@ class TmxLoader(object):
                 self.__sets_ranges.insert(tile_gid, tileset.get_id())
 
     def __load_tiles(self):
-        position = 0
         layers = self.__map.getElementsByTagName('layer')
         for raw_layer in layers:
             tiles = raw_layer.getElementsByTagName('tile')
@@ -80,13 +93,15 @@ class TmxLoader(object):
                     y += 1
 
                 self.__tiles.append(tile)
-            print(len(self.__tiles))
-
-        # for tile in self.__tiles:
-            # print(tile.get_coordinates(), tile.get_template().gid)
 
     def get_tilesets(self):
         return self.__sets
 
     def get_tiles(self):
         return self.__tiles
+
+    def get_tile_dimensions(self):
+        return self.__tile_dimensions
+
+    def get_map_dimensions(self):
+        return self.__map_dimensions

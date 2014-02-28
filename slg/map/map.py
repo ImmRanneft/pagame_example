@@ -14,13 +14,14 @@ class Map(object):
     __world_bounding_top = __world_bounding_bottom = 0
     __world_center_x = __world_center_y = 0
 
-    def __init__(self, tile_group, renderer, loader):
+    def __init__(self, l_map, tile_group, renderer, loader):
+        self.__loader = loader
         self.__tile_group = tile_group
         self.__renderer = renderer
-        self.__loader = loader
+        self.__loader.load(l_map)
 
-    def load(self, map):
-        self.__loader.load(map)
+    def load(self):
+
         self.__loader.get_tiles()
 
         # image = pygame.image.load('demo1.png').convert_alpha()
@@ -45,3 +46,9 @@ class Map(object):
     def draw(self):
         for tile in self.__loader.get_tiles():
             self.__renderer.draw(tile)
+
+    def get_tile_dimensions(self):
+        return self.__loader.get_tile_dimensions()
+
+    def get_map_dimensions(self):
+        return self.__loader.get_map_dimensions()

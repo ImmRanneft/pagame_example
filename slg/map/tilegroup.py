@@ -5,9 +5,9 @@ class TileGroup(object):
 
     __left = __right = __top = __bottom = 0
 
-    def __init__(self, world_width, world_height):
-        world_width = int(world_width)
-        world_height = int(world_height)
+    def set_world_width(self, world_dimensions):
+        world_width = int(world_dimensions[0])
+        world_height = int(world_dimensions[1])
         self.__container = [[0 for x in range(0, world_width)] for x in range(0, world_height)]
 
     def set_area(self, left, right, top, bottom):

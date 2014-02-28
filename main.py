@@ -21,6 +21,8 @@ class Camera(object):
     __width = __height = 0
     moving_x = moving_y = 0
     __left = __right = __top = __bottom = 0
+    __tile_width = __tile_height = 0
+    __map_width = __map_height = 0
 
     MOVEMENT_SPEED = 40
     MOVEMENT_POSITIVE = 1
@@ -30,6 +32,12 @@ class Camera(object):
     def __init__(self, display):
         self.__width = display[0]
         self.__height = display[1]
+
+    def set_dimensions(self, tile_dimensions, map_dimensions):
+        self.__tile_width = tile_dimensions[0]
+        self.__tile_height = tile_dimensions[1]
+        self.__map_width = map_dimensions[0]
+        self.__map_height = map_dimensions[1]
 
     def set_moving_x(self, movement):
         self.moving_x = movement
@@ -54,11 +62,11 @@ class Camera(object):
         self.__current_y += self.moving_y * self.MOVEMENT_SPEED
 
     def get_bounds(self):
-        left = math.floor(self.__current_x / TILE_WIDTH - 1)
-        right = math.ceil((self.__current_x + self.__width) / TILE_WIDTH + 1)
+        left = math.floor(self.__current_x / self.__tile_width - 1)
+        right = math.ceil((self.__current_x + self.__width) / self.__tile_width + 1)
 
-        top = math.floor(self.__current_y / TILE_HEIGHT * 4 - 2)
-        bottom = math.ceil((self.__current_y + self.__height) / TILE_HEIGHT * 4 + 2)
+        top = math.floor(self.__current_y / self.__tile_height * 4 - 2)
+        bottom = math.ceil((self.__current_y + self.__height) / self.__tile_height * 4 + 2)
 
         return left, right, top, bottom
 
@@ -80,11 +88,12 @@ def main():
 
     camera = Camera(DISPLAY)
     renderer = Renderer(display, camera)
-    tile_group = TileGroup(MAP_WIDTH_IN_TILES, MAP_HEIGHT_IN_TILES)
+    tile_group = TileGroup()
     loader = slg.map.loader.tmx.TmxLoader()
-    world_map = Map(tile_group, renderer, loader)
     l_map = os.path.realpath(os.path.join(os.getcwd(), "data", "maps", l_map))
-    world_map.load(l_map)
+    world_map = Map(l_map, tile_group, renderer, loader)
+    tile_group.set_world_width(world_map.get_map_dimensions())
+    camera.set_dimensions(world_map.get_tile_dimensions(), world_map.get_map_dimensions())
     # worldmap.draw()
 
     # worldmap.generate()
