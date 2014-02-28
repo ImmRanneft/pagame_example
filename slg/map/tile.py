@@ -4,48 +4,34 @@ import pygame
 
 
 class Tile(object):
-    __renderer = __image = __rect = None
-    __tile_width = __tile_height = __offset_x = __offset_y = __tile_x = __tile_y = 0
 
-    def __init__(self, renderer, image, tile_width, tile_height, offset_x=0, offset_y=0):
-        self.__renderer = renderer
-        self.__image = image
-        self.__tile_width = tile_width
-        self.__tile_height = tile_height
-        self.__offset_x = offset_x
-        self.__offset_y = offset_y
+    __coordinates = [0, 0]
+    __display_coordinates = [0, 0]
+    __rectangle = [0, 0, 0, 0]
+    __dimensions = [0, 0]
+    __offset = [0, 0]
+    __template = None
 
-    def coordinates(self, x, y):
-        self.__tile_x, self.__tile_y = x, y
-        return self
+    def __init__(self, template):
+        self.__template = template
+
+    def get_template(self):
+        return self.__template
+
+    def coordinates(self, coordinates):
+        self.__coordinates = coordinates
 
     def get_coordinates(self):
-        return self.__tile_x, self.__tile_y
+        return self.__coordinates
 
-    def draw(self):
-        self.__renderer.draw(self)
-        return self
+    def get_dimensions(self):
+        return self.__template.get_dimensions()
 
-    def offset_x(self):
-        return self.__offset_x
-
-    def offset_y(self):
-        return self.__offset_y
-
-    def get_width(self):
-        return self.__tile_width
-
-    def get_height(self):
-        return self.__tile_height
-
-    def get_x(self):
-        return self.__tile_x
-
-    def get_y(self):
-        return self.__tile_y
+    def get_offset(self):
+        return self.__template.get_offset()
 
     def get_image(self):
-        return self.__image
+        return self.__template.get_image()
 
     def set_rect(self, rect):
         self.__rect = rect
@@ -53,3 +39,14 @@ class Tile(object):
 
     def get_rect(self):
         return self.__rect
+
+    def get_x(self):
+        tile_x = self.__template.get_dimensions()[0] * self.get_coordinates()[0]
+        if self.get_coordinates()[1] % 2 == 1:
+            tile_x -= self.__template.get_dimensions()[0]/2
+        return tile_x
+
+    def get_y(self):
+        tile_y = self.__template.get_dimensions()[1] * self.get_coordinates()[1]
+        tile_y -= self.get_coordinates()[1] * self.__template.get_offset()[1]*3
+        return tile_y

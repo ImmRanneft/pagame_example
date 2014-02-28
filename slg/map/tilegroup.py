@@ -12,7 +12,7 @@ class TileGroup(object):
 
     def set_area(self, left, right, top, bottom):
         self.__left, self.__right, self.__top, self.__bottom = left, right, top, bottom
-        print(self.__left, self.__right, self.__top, self.__bottom)
+        # print(self.__left, self.__right, self.__top, self.__bottom)
 
     def draw(self):
         # try:

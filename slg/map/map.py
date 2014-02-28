@@ -21,7 +21,7 @@ class Map(object):
 
     def load(self, map):
         self.__loader.load(map)
-        tiles = self.__loader.get_tiles()
+        self.__loader.get_tiles()
 
         # image = pygame.image.load('demo1.png').convert_alpha()
         # for j in range(self.__world_bounding_top, self.__world_bounding_bottom):
@@ -42,3 +42,6 @@ class Map(object):
     def get_world_center(self):
         return self.__world_center_x, self.__world_center_y
 
+    def draw(self):
+        for tile in self.__loader.get_tiles():
+            self.__renderer.draw(tile)

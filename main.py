@@ -4,13 +4,12 @@
 import slg
 import pygame
 import math
-from pygame.locals import *
+import os
 from slg.map.locals import *
+from pygame.locals import *
 from slg.map.map import Map
 from slg.renderer import Renderer
 from slg.map import TileGroup
-import os
-
 
 BACKGROUND_COLOR = "#004400"
 
@@ -65,7 +64,6 @@ class Camera(object):
 def main():
 
     pygame.init()
-
     videoinfo = pygame.display.Info()
     DISPLAY = (400, 300)
 
@@ -79,48 +77,49 @@ def main():
     tile_group = TileGroup(MAP_WIDTH_IN_TILES, MAP_HEIGHT_IN_TILES)
     loader = slg.map.loader.tmx.TmxLoader()
     worldmap = Map(tile_group, renderer, loader)
-    worldmap.load('111')
-
+    map = os.path.realpath(os.path.join(os.getcwd(), "data", "maps", 'test2.tmx'))
+    worldmap.load(map)
+    worldmap.draw()
 
     # worldmap.generate()
-    # camera.reset_camera_to((worldmap.get_world_center()))
+    camera.reset_camera_to((worldmap.get_world_center()))
     #
     # tile_group.draw()
     #
     # # camera.reset_camera_to(tile_group.get(1).get_x(), tile_group.get(1).get_y())
     #
-    # running = True
+    running = True
     #
-    # while running:
-    #     for e in pygame.event.get():
-    #         if e.type == KEYDOWN:
-    #             if (e.key == K_F4 and pygame.key.get_mods() and pygame.KMOD_ALT) or e.key == K_ESCAPE:
-    #                 running = False
-    #             if e.key == K_DOWN:
-    #                 camera.set_moving_y(camera.MOVEMENT_POSITIVE)
-    #             if e.key == K_UP:
-    #                 camera.set_moving_y(camera.MOVEMENT_NEGATIVE)
-    #             if e.key == K_RIGHT:
-    #                 camera.set_moving_x(camera.MOVEMENT_POSITIVE)
-    #             if e.key == K_LEFT:
-    #                 camera.set_moving_x(camera.MOVEMENT_NEGATIVE)
-    #         if e.type == KEYUP:
-    #             if e.key == K_UP or e.key == K_DOWN:
-    #                 camera.set_moving_y(camera.MOVEMENT_STOP)
-    #             if e.key == K_LEFT or e.key == K_RIGHT:
-    #                 camera.set_moving_x(camera.MOVEMENT_STOP)
-    #             if e.key == K_c:
-    #                 zz = tile_group.get((0, 0))
-    #                 camera.reset_camera_to((zz.get_x(), zz.get_y()))
-    #
-    #     camera.update()
-    #     display.fill(clr)
-    #     left, right, top, bottom = camera.get_bounds()
-    #     tile_group.set_area(left, right, top, bottom)
-    #     tile_group.draw()
-    #
-    #     pygame.display.update()
-    #     clock.tick(10)
+    while running:
+        for e in pygame.event.get():
+            if e.type == KEYDOWN:
+                if (e.key == K_F4 and pygame.key.get_mods() and pygame.KMOD_ALT) or e.key == K_ESCAPE:
+                    running = False
+                if e.key == K_DOWN:
+                    camera.set_moving_y(camera.MOVEMENT_POSITIVE)
+                if e.key == K_UP:
+                    camera.set_moving_y(camera.MOVEMENT_NEGATIVE)
+                if e.key == K_RIGHT:
+                    camera.set_moving_x(camera.MOVEMENT_POSITIVE)
+                if e.key == K_LEFT:
+                    camera.set_moving_x(camera.MOVEMENT_NEGATIVE)
+            if e.type == KEYUP:
+                if e.key == K_UP or e.key == K_DOWN:
+                    camera.set_moving_y(camera.MOVEMENT_STOP)
+                if e.key == K_LEFT or e.key == K_RIGHT:
+                    camera.set_moving_x(camera.MOVEMENT_STOP)
+                if e.key == K_c:
+                    zz = tile_group.get((0, 0))
+                    camera.reset_camera_to((zz.get_x(), zz.get_y()))
+
+        camera.update()
+        display.fill(clr)
+        worldmap.draw()
+        left, right, top, bottom = camera.get_bounds()
+        tile_group.set_area(left, right, top, bottom)
+
+        pygame.display.update()
+        clock.tick(30)
         # running = False
 
 if __name__ == "__main__":
