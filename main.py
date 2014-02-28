@@ -47,9 +47,9 @@ class Camera(object):
 
     def reset_camera_to(self, coordinates):
         if coordinates[0] is not False:
-            self.__current_x = coordinates[0] - self.__width / 2
+            self.__current_x = coordinates[0] # - self.__width / 2
         if coordinates[1] is not False:
-            self.__current_y = coordinates[1] - self.__height / 2
+            self.__current_y = coordinates[1] # c- self.__height / 2
 
     def get_dest(self):
         return self.__current_x, self.__current_y
@@ -76,17 +76,20 @@ def main():
     config.sections()
     config.read(os.path.join(os.getcwd(), "config", "main.ini"))
     l_map = config['MAIN']['map']
+    config_display = config['DISPLAY']
+    display_width = int(config_display.get('width', 800))
+    display_height = int(config_display.get('height', 600))
 
     pygame.init()
-    videoinfo = pygame.display.Info()
-    DISPLAY = (1024, 768)
+    # videoinfo = pygame.display.Info()
+    display_tup = (display_width, display_height)
 
-    display = pygame.display.set_mode(DISPLAY)
+    display = pygame.display.set_mode(display_tup)
 
     clr = (0, 0, 0)
     clock = pygame.time.Clock()
 
-    camera = Camera(DISPLAY)
+    camera = Camera(display_tup)
     renderer = Renderer(display, camera)
     tile_group = TileGroup()
     loader = slg.map.loader.tmx.TmxLoader()

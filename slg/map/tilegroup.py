@@ -4,6 +4,7 @@ __author__ = 'Den'
 class TileGroup(object):
 
     __left = __right = __top = __bottom = 0
+    __container = []
 
     def set_world_width(self, world_dimensions):
         world_width = int(world_dimensions[0])

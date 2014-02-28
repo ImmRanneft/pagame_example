@@ -19,6 +19,13 @@ class Map(object):
         self.__tile_group = tile_group
         self.__renderer = renderer
         self.__loader.load(l_map)
+        [self.__world_center_x, self.__world_center_y] = self.__loader.get_map_dimensions()
+        self.__world_center_x /= 2
+        self.__world_center_y /= 2
+
+        for tile in self.__loader.get_tiles():
+            [x, y] = tile.get_coordinates()
+            self.__tile_group.append(tile, x, y)
 
     def load(self):
 
