@@ -65,7 +65,7 @@ def main():
 
     pygame.init()
     videoinfo = pygame.display.Info()
-    DISPLAY = (400, 300)
+    DISPLAY = (1024, 768)
 
     display = pygame.display.set_mode(DISPLAY)
 
@@ -79,7 +79,7 @@ def main():
     worldmap = Map(tile_group, renderer, loader)
     map = os.path.realpath(os.path.join(os.getcwd(), "data", "maps", 'test2.tmx'))
     worldmap.load(map)
-    worldmap.draw()
+    # worldmap.draw()
 
     # worldmap.generate()
     camera.reset_camera_to((worldmap.get_world_center()))
@@ -90,6 +90,7 @@ def main():
     #
     running = True
     #
+
     while running:
         for e in pygame.event.get():
             if e.type == KEYDOWN:

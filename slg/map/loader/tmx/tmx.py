@@ -71,7 +71,8 @@ class TmxLoader(object):
                 [tile_width, tile_height] = tile_template.get_dimensions()
                 tile = Tile(tile_template)
                 tile.coordinates(coordinates)
-                rect = ((x * tile_width, y * tile_height), (tile_width, tile_height))
+                offset_x, offset_y = tile_template.get_image_offsets()
+                rect = ((offset_x * tile_width, offset_y * tile_height), (tile_width, tile_height))
                 tile.set_rect(rect)
                 x += 1
                 if x >= l_w:
@@ -79,9 +80,10 @@ class TmxLoader(object):
                     y += 1
 
                 self.__tiles.append(tile)
+            print(len(self.__tiles))
 
-        for tile in self.__tiles:
-            print(tile.get_coordinates(), tile.get_template().gid)
+        # for tile in self.__tiles:
+            # print(tile.get_coordinates(), tile.get_template().gid)
 
     def get_tilesets(self):
         return self.__sets
