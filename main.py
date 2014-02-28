@@ -5,6 +5,7 @@ import slg
 import pygame
 import math
 import os
+import configparser
 from slg.map.locals import *
 from pygame.locals import *
 from slg.map.map import Map
@@ -12,6 +13,7 @@ from slg.renderer import Renderer
 from slg.map import TileGroup
 
 BACKGROUND_COLOR = "#004400"
+
 
 class Camera(object):
 
@@ -62,6 +64,10 @@ class Camera(object):
 
 
 def main():
+    config = configparser.ConfigParser()
+    config.sections()
+    config.read(os.path.join(os.getcwd(), "config", "main.ini"))
+    l_map = config['MAIN']['map']
 
     pygame.init()
     videoinfo = pygame.display.Info()
@@ -76,13 +82,13 @@ def main():
     renderer = Renderer(display, camera)
     tile_group = TileGroup(MAP_WIDTH_IN_TILES, MAP_HEIGHT_IN_TILES)
     loader = slg.map.loader.tmx.TmxLoader()
-    worldmap = Map(tile_group, renderer, loader)
-    map = os.path.realpath(os.path.join(os.getcwd(), "data", "maps", 'test2.tmx'))
-    worldmap.load(map)
+    world_map = Map(tile_group, renderer, loader)
+    l_map = os.path.realpath(os.path.join(os.getcwd(), "data", "maps", l_map))
+    world_map.load(l_map)
     # worldmap.draw()
 
     # worldmap.generate()
-    camera.reset_camera_to((worldmap.get_world_center()))
+    camera.reset_camera_to((world_map.get_world_center()))
     #
     # tile_group.draw()
     #
@@ -115,7 +121,7 @@ def main():
 
         camera.update()
         display.fill(clr)
-        worldmap.draw()
+        world_map.draw()
         left, right, top, bottom = camera.get_bounds()
         tile_group.set_area(left, right, top, bottom)
 
