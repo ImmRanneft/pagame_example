@@ -43,7 +43,7 @@ class Tile(object):
     def get_x(self):
         tile_x = self.__template.get_dimensions()[0] * self.get_coordinates()[0]
         if self.get_coordinates()[1] % 2 == 1:
-            tile_x -= self.__template.get_dimensions()[0]/2
+            tile_x += self.__template.get_dimensions()[0]/2
         return tile_x
 
     def get_y(self):

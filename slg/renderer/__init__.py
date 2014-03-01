@@ -20,9 +20,13 @@ class Renderer(object):
 
     def draw(self, drawable):
         camera_x, camera_y = self.__camera.get_dest()
-        get_x, get_y = drawable.get_x() - camera_x, drawable.get_y() - camera_y
-        # print(get_x, get_y)
-        self.__surface.blit(drawable.get_image(), (get_x, get_y), drawable.get_rect())
+        try:
+            get_x, get_y = drawable.get_x() - camera_x, drawable.get_y() - camera_y
+            # print(get_x, get_y)
+            self.__surface.blit(drawable.get_image(), (get_x, get_y), drawable.get_rect())
+        except AttributeError:
+            drawable
+            # print(drawable)
 
     def get_camera_dimensions(self):
         return self.__camera.get_dimensions()

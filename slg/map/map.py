@@ -22,6 +22,7 @@ class Map(object):
         [self.__world_center_x, self.__world_center_y] = self.__loader.get_map_dimensions()
         self.__world_center_x /= 2
         self.__world_center_y /= 2
+        tile_group.set_world_dimensions(self.__loader.get_map_dimensions())
 
         for tile in self.__loader.get_tiles():
             [x, y] = tile.get_coordinates()
@@ -51,8 +52,9 @@ class Map(object):
         return self.__world_center_x, self.__world_center_y
 
     def draw(self):
-        for tile in self.__loader.get_tiles():
-            self.__renderer.draw(tile)
+        #for tile in self.__loader.get_tiles():
+        #    self.__renderer.draw(tile)
+        self.__tile_group.draw()
 
     def get_tile_dimensions(self):
         return self.__loader.get_tile_dimensions()

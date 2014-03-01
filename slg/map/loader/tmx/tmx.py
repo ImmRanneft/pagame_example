@@ -9,7 +9,7 @@ import os
 
 class TmxLoader(object):
 
-    __sets_ranges = list()
+    __sets_ranges = dict()
     __sets = list()
     __tiles = list()
     __objects = list()
@@ -36,7 +36,7 @@ class TmxLoader(object):
         raw_map = self.__map.getElementsByTagName('map')[0]
         self.__orientation = raw_map.attributes['orientation'].value
         tile_width = int(raw_map.attributes['tilewidth'].value)
-        tile_height = int(raw_map.attributes['tileheight'].value) * 2
+        tile_height = int(raw_map.attributes['tileheight'].value)
         map_width = int(raw_map.attributes['width'].value)
         map_height = int(raw_map.attributes['height'].value)
         self.__map_dimensions = [map_width, map_height]
@@ -66,8 +66,8 @@ class TmxLoader(object):
 
         for tileset in self.__sets:
             i, j = tileset.get_bounds()
-            for tile_gid in range(i, j):
-                self.__sets_ranges.insert(tile_gid, tileset.get_id())
+            for tile_gid in range(i, j+1):
+                self.__sets_ranges[tile_gid] = tileset.get_id()
 
     def __load_tiles(self):
         layers = self.__map.getElementsByTagName('layer')
@@ -79,7 +79,7 @@ class TmxLoader(object):
             for raw_tile in tiles:
                 tile_gid = int(raw_tile.attributes['gid'].value)
                 coordinates = [x, y]
-                tileset = self.__sets[self.__sets_ranges[tile_gid - 1]]
+                tileset = self.__sets[self.__sets_ranges[tile_gid]]
                 tile_template = tileset.get_tile_template(tile_gid)
                 [tile_width, tile_height] = tile_template.get_dimensions()
                 tile = Tile(tile_template)

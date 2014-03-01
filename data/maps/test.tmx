@@ -28,10 +28,10 @@
  </tileset>
  <layer name="Слой тайлов 1" width="2" height="2">
   <data>
-   <tile gid="1"/>
+   <tile gid="5"/>
    <tile gid="2"/>
-   <tile gid="1"/>
-   <tile gid="2"/>
+   <tile gid="23"/>
+   <tile gid="48"/>
   </data>
  </layer>
 </map>

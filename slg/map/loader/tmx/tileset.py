@@ -20,7 +20,7 @@ class Tileset(object):
     __offset_x = __offset_y = 0
     __image_width = __image_height = 0
     __tile_width = __tile_height = 0
-    __tile_storage = list()
+    __tile_storage = dict()
 
     def __init__(self, firstgid, name, identificator):
         self.__firstgid = int(firstgid)
@@ -51,6 +51,7 @@ class Tileset(object):
         self.__tiles_in_row = tiles_in_row = int(self.__image_width / self.__tile_width)
         self.__tiles_in_col = tiles_in_col = int(self.__image_height / self.__tile_height)
         self.__lastgid = self.__firstgid - 1 + int(tiles_in_row * tiles_in_col)
+
         """
             this would be mush pleasent to create tiles object (or maybe create it on lasy load?)
             and in load_tile only clone already existing objects and set them coordinates only,
@@ -58,12 +59,12 @@ class Tileset(object):
             so we have to slice an image and create propper quantity of tiles in tileset storage.
             so right here we can calculate the rectangle for tile
         """
-        gid = 0
+        gid = self.__firstgid
         for tile_row in range(0, tiles_in_row):
             for tile_col in range(0, tiles_in_col):
                 tile = Tile(gid)
                 tile.set_tileset(self)
-                self.__tile_storage.insert(gid, tile)
+                self.__tile_storage[gid] = tile
                 gid += 1
 
         # self.slice_an_image_on_tiles()
@@ -91,5 +92,5 @@ class Tileset(object):
             if tile_col > tiles_in_col - 1:
                 tile_col = 0
 
-        print(tile_gid, tile_row, tile_col)
+        #print(tile_gid, tile_row, tile_col)
         return tile_row, tile_col
