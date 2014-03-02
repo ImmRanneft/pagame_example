@@ -59,6 +59,10 @@ class Tileset(object):
             so we have to slice an image and create propper quantity of tiles in tileset storage.
             so right here we can calculate the rectangle for tile
         """
+        tile = Tile(0)
+        tile.set_tileset(self)
+        self.__tile_storage[0] = tile
+
         gid = self.__firstgid
         for tile_row in range(0, tiles_in_row):
             for tile_col in range(0, tiles_in_col):
@@ -84,7 +88,7 @@ class Tileset(object):
         tiles_in_row = self.__tiles_in_row
         tile_row = 0
         tile_col = 0
-        for i in range(0, tile_gid-1):
+        for i in range(self.__firstgid, tile_gid):
             tile_row += 1
             if tile_row > tiles_in_row - 1:
                 tile_row = 0

@@ -5,28 +5,31 @@ from slg.map.locals import *
 import pygame
 import random
 
-
 class Map(object):
 
-    __tile_group = __renderer = __loader = None
+    __layer = __renderer = __loader = None
+    __layers = list()
 
     __world_bounding_left = __world_bounding_right = 0
     __world_bounding_top = __world_bounding_bottom = 0
     __world_center_x = __world_center_y = 0
 
-    def __init__(self, l_map, tile_group, renderer, loader):
+    def __init__(self, l_map, renderer, loader):
         self.__loader = loader
-        self.__tile_group = tile_group
+        # self.__layer = layer
         self.__renderer = renderer
         self.__loader.load(l_map)
         [self.__world_center_x, self.__world_center_y] = self.__loader.get_map_dimensions()
         self.__world_center_x /= 2
         self.__world_center_y /= 2
-        tile_group.set_world_dimensions(self.__loader.get_map_dimensions())
+
+        for layer in self.__loader.get_layers():
+            layer.set_renderer(self.__renderer)
+            self.__layers.append(layer)
 
         for tile in self.__loader.get_tiles():
             [x, y] = tile.get_coordinates()
-            self.__tile_group.append(tile, x, y)
+            self.__layer.append(tile, x, y)
 
     def load(self):
 
@@ -46,15 +49,18 @@ class Map(object):
         #         rect = pygame.Rect((tile.offset_x() * tile.get_width(), tile.offset_y() * tile.get_height()),
         #                            (tile.get_width(), tile.get_height()))
         #         tile.set_rect(rect)
-        #         self.__tile_group.append(tile, j, i)
+        #         self.__layer.append(tile, j, i)
 
     def get_world_center(self):
         return self.__world_center_x, self.__world_center_y
 
-    def draw(self):
-        #for tile in self.__loader.get_tiles():
-        #    self.__renderer.draw(tile)
-        self.__tile_group.draw()
+    def draw(self, visible_area):
+        for layer in self.get_layers():
+            layer.set_visible_area(visible_area)
+            layer.draw()
+
+    def get_layers(self):
+        return self.__layers
 
     def get_tile_dimensions(self):
         return self.__loader.get_tile_dimensions()
