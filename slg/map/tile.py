@@ -38,26 +38,17 @@ class Tile(object):
         return self
 
     def get_rect(self):
-        if self.__template.gid == 89:
-            print(self.__rect)
-            exit()
         return self.__rect
 
     def get_x(self):
-        tile_x = self.__template.get_dimensions()[0] * self.get_coordinates()[0]
-        if self.get_coordinates()[1] % 2 == 1:
-            tile_x += self.__template.get_dimensions()[0]/2
+        tile_x = self.__template.get_dimensions()[0] * self.get_coordinates()[0] + \
+                 int(self.get_coordinates()[1]) % 2 * self.__template.get_dimensions()[0]/2
         return tile_x
 
     def get_y(self):
-        tile_y = self.__template.get_dimensions()[1] * self.get_coordinates()[1]
-        tile_y -= self.__template.get_offset()[1]
-        gid = self.__template.gid
-        if gid == 697 or gid == 698 or gid == 699:
-            print(gid)
-            tile_y -= self.get_coordinates()[1] * (self.__template.get_dimensions()[1] - 12 + self.__template.get_offset()[1])
-        else:
-            tile_y -= self.get_coordinates()[1] * (self.__template.get_dimensions()[1] / 2 + self.__template.get_offset()[1])
+        tile_y = self.__template.get_dimensions()[1] / 2 * self.get_coordinates()[1]
+        rect = self.get_rect()
+        tile_y -= self.__template.get_offset()[1] * self.get_coordinates()[1]
         return tile_y
 
     def get_id(self):
