@@ -43,7 +43,7 @@ class TmxLoader(object):
     def __load_sets(self):
         i = 0
         for raw_tileset in self.__map.getElementsByTagName('tileset'):
-            tileset = Tileset(raw_tileset.attributes['firstgid'].value, raw_tileset.attributes['name'].value, i)
+            tileset = Tileset(raw_tileset.attributes['firstgid'].value, raw_tileset.attributes['name'].value, i, self)
             i += 1
             image = raw_tileset.getElementsByTagName('image')[0]
             image_name = image.attributes['source'].value

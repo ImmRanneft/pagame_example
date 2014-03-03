@@ -1,6 +1,7 @@
 __author__ = 'Den'
 
 import pygame
+import tmxlib
 
 
 class Tile(object):
@@ -46,9 +47,13 @@ class Tile(object):
         return tile_x
 
     def get_y(self):
-        tile_y = self.__template.get_dimensions()[1] / 2 * self.get_coordinates()[1]
-        rect = self.get_rect()
-        tile_y -= self.__template.get_offset()[1] * self.get_coordinates()[1]
+        regular = self.__template.get_regular_tile_dimensions()
+        current = self.__template.get_dimensions()
+        offset = self.__template.get_offset()
+        divider = (current[1] - 2 * offset[1]) / regular[1] * 2
+        tile_y = self.__template.get_dimensions()[1] / divider * self.get_coordinates()[1]
+        dy = current[1] - regular[1] - offset[1] + offset[1] * self.get_coordinates()[1]
+        tile_y -= dy
         return tile_y
 
     def get_id(self):

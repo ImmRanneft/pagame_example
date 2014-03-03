@@ -47,7 +47,7 @@ def main():
     world_map = Map(l_map, renderer, loader)
 
     camera.set_dimensions(world_map.get_tile_dimensions(), world_map.get_map_dimensions())
-    camera.reset_camera_to((world_map.get_world_center()))
+    camera.reset_camera_to((0, 0))
 
     running = True
 

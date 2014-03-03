@@ -41,9 +41,9 @@ class Camera(object):
 
     def reset_camera_to(self, coordinates):
         if coordinates[0] is not False:
-            self.__current_x = coordinates[0] * self.__tile_width - self.__width / 2
+            self.__current_x = coordinates[0] * self.__tile_width
         if coordinates[1] is not False:
-            self.__current_y = coordinates[1] * self.__tile_height / 2  - 3 / 2 * self.__height
+            self.__current_y = coordinates[1] * self.__tile_height / 2
 
     def get_dest(self):
         return self.__current_x, self.__current_y
@@ -52,16 +52,17 @@ class Camera(object):
         return self.__width, self.__height
 
     def update(self):
+        d = 0
         self.__current_x += self.moving_x * self.MOVEMENT_SPEED
-        if self.__current_x < self.__edges['left'] -500:
-            self.__current_x = self.__tile_width - 500
-        if self.__current_x + self.__width > self.__edges['right']:
-            self.__current_x = self.__edges['right'] - self.__width - self.__tile_width / 2
+        if self.__current_x < self.__edges['left'] - d:
+            self.__current_x = self.__tile_width - d
+        if self.__current_x + self.__width > self.__edges['right'] + d:
+            self.__current_x = self.__edges['right'] - self.__width - self.__tile_width / 2 + d
         self.__current_y += self.moving_y * self.MOVEMENT_SPEED
-        if self.__current_y < self.__edges['top']-500:
-            self.__current_y = self.__tile_height-500
-        if self.__current_y + self.__height > self.__edges['bottom']:
-            self.__current_y = self.__edges['bottom'] - self.__height - self.__tile_height / 2
+        if self.__current_y < self.__edges['top'] - d:
+            self.__current_y = self.__tile_height - d
+        if self.__current_y + self.__height > self.__edges['bottom'] + d:
+            self.__current_y = self.__edges['bottom'] - self.__height - self.__tile_height / 2 + d
 
     def get_bounds(self):
         left = math.floor(self.__current_x / self.__tile_width - 1)

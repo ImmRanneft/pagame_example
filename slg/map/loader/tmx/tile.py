@@ -24,3 +24,6 @@ class Tile(object):
 
     def get_image_offsets(self):
         return self.__tileset.get_image_offsets(self.gid)
+
+    def get_regular_tile_dimensions(self):
+        return self.__tileset.get_regular_tile_dimensions()

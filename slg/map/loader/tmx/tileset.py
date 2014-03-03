@@ -22,7 +22,8 @@ class Tileset(object):
     __tile_width = __tile_height = 0
     __tile_storage = dict()
 
-    def __init__(self, firstgid, name, identificator):
+    def __init__(self, firstgid, name, identificator, loader):
+        self.__loader = loader
         self.__firstgid = int(firstgid)
         self.__name = name
         self.__id = identificator
@@ -98,3 +99,6 @@ class Tileset(object):
 
         #print(tile_gid, tile_row, tile_col)
         return tile_row, tile_col
+
+    def get_regular_tile_dimensions(self):
+        return self.__loader.get_tile_dimensions()
