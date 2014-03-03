@@ -25,6 +25,9 @@
  <tileset firstgid="25" name="grassland_tiles" tilewidth="64" tileheight="32">
   <image source="../../../../bin/pg/data/tiles/grassland_tiles.png" trans="ff00ff" width="1024" height="1344"/>
  </tileset>
+ <tileset firstgid="697" name="TileObjectsRubbleWalls" tilewidth="64" tileheight="128">
+  <image source="../tiles/TileObjectsRubbleWalls.png" trans="ff00ff" width="512" height="1024"/>
+ </tileset>
  <layer name="grass" width="50" height="100">
   <data>
    <tile gid="1"/>
@@ -5589,6 +5592,7 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
+   <tile gid="699"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -5638,6 +5642,7 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
+   <tile gid="698"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -5686,9 +5691,7 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
+   <tile gid="697"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>

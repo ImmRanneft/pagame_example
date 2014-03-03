@@ -52,9 +52,12 @@ class Tile(object):
     def get_y(self):
         tile_y = self.__template.get_dimensions()[1] * self.get_coordinates()[1]
         tile_y -= self.__template.get_offset()[1]
-        tile_y -= self.get_coordinates()[1] * (self.__template.get_dimensions()[1] / 2 + self.__template.get_offset()[1])
-        # if self.__template.gid == 25:
-        #     print(tile_y)
+        gid = self.__template.gid
+        if gid == 697 or gid == 698 or gid == 699:
+            print(gid)
+            tile_y -= self.get_coordinates()[1] * (self.__template.get_dimensions()[1] - 12 + self.__template.get_offset()[1])
+        else:
+            tile_y -= self.get_coordinates()[1] * (self.__template.get_dimensions()[1] / 2 + self.__template.get_offset()[1])
         return tile_y
 
     def get_id(self):
