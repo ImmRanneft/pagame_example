@@ -1,7 +1,5 @@
 __author__ = 'Den'
 
-import pygame
-
 
 class Renderer(object):
 

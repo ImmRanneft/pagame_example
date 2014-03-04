@@ -2,6 +2,7 @@ __author__ = 'Den'
 
 import math
 
+
 class Camera(object):
 
     __current_x = __current_y = 0
@@ -41,9 +42,9 @@ class Camera(object):
 
     def reset_camera_to(self, coordinates):
         if coordinates[0] is not False:
-            self.__current_x = coordinates[0] * self.__tile_width
+            self.__current_x = coordinates[0] * self.__tile_width - self.__width / 2
         if coordinates[1] is not False:
-            self.__current_y = coordinates[1] * self.__tile_height / 2
+            self.__current_y = coordinates[1] * self.__tile_height / 2 - self.__height / 2
 
     def get_dest(self):
         return self.__current_x, self.__current_y

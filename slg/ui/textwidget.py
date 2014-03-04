@@ -65,6 +65,3 @@ class TextWidget(object):
             y = index * self.font.get_linesize()
             padding = (x + (w-self.main_surface_width)/2, y + (h-self.main_surface_height)/2)
             self.__target.blit(text_surface, padding)
-        print(w, h, x, y, padding, self.font_size)
-
-
