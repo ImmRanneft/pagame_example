@@ -49,18 +49,21 @@ class MenuScene(Scene):
         transparent_surface.set_alpha(128)
         transparent_surface.fill((0, 0, 0))
         self.overlay = transparent_surface
-
-    def draw(self, surface = None):
-        if surface is not None:
-            self.set_target(surface)
-        self._target.blit(self.overlay, (0, 0))
         str = "Game Paused\n" \
               "mini-help\n" \
               "use arrow keys to move camera\n" \
               "use \"c\" key to center the map\n" \
               "use \"p\" to pause/run game"
-        label = ui.TextWidget(str, (200, 0, 50))
-        label.draw_to(self._target)
+        self.label = ui.TextWidget((200, 200, 200))
+        self.label.set_text(str)
+
+    def draw(self, surface = None):
+        if surface is not None:
+            self.set_target(surface)
+
+        self._target.blit(self.overlay, (0, 0))
+        self.label.set_target(self._target)
+        self.label.draw()
 
 
 def main():
@@ -149,8 +152,9 @@ def main():
             display.blit(map_surface, (0, 0))
             camera.update()
         elif state == PAUSED:
-            if previous_state != state:
-                menu.draw(display)
+            # if previous_state != state:
+            display.blit(map_surface, (0, 0))
+            menu.draw(display)
         pygame.display.update()
         clock.tick(30)
         # running = False
