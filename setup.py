@@ -10,6 +10,7 @@ product_name = 'pg'
 bdist_msi_options = {
     'add_to_path': False,
     'initial_target_dir': r'[ProgramFilesFolder]\%s\%s' % (company_name, product_name),
+    ''upgrade-code':'{3FD91D28-16DF-45E3-904A-6B65F1D9CBA7}'
     }
 buildOptions = dict(packages = [], excludes = ['html','email','socket','bz2','ssl','unicodedate'], include_files=['data/', 'config/'], 
 icon = 'icon.ico', optimize = 2)
