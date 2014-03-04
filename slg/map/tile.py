@@ -1,8 +1,6 @@
 __author__ = 'Den'
 
 import pygame
-import tmxlib
-
 
 class Tile(object):
 

@@ -2,7 +2,7 @@ __author__ = 'Den'
 
 from xml.dom import minidom
 from slg.map.loader.tmx import Tileset
-from slg.map import Layer
+from slg.map.layer import Layer
 from slg.map.loader.tmx import DATA_DIR
 from slg.map import Tile
 import os

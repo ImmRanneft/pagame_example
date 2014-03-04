@@ -1,19 +1,67 @@
 #!C:\Python33\python.exe
 # -*- coding: utf-8 -*-
 
-import slg
-import pygame
 import os
 import configparser
+
+import pygame
+from pygame.locals import *
+
+import slg
 from slg.camera import Camera
 from slg.map.locals import *
-from pygame.locals import *
 from slg.map.map import Map
 from slg.renderer import Renderer
-from slg.map.layer import Layer
+import slg.ui as ui
 
 PAUSED = 0
 RUNNING = 1
+
+
+class Scene(object):
+
+    _surface = _target = None
+
+    def __init__(self, vp):
+        self._surface = pygame.Surface(vp)
+
+    def set_target(self, surface):
+        self._target = surface
+
+    def draw(self, surface=None):
+        if surface:
+            self.set_target(surface)
+        if self._target is not None:
+            self._target.blit(self._surface, (0, 0))
+
+    def append(self, surface, dest):
+        self._surface.blit(surface, dest)
+
+    def get_surface(self):
+        return self._surface
+
+
+class MenuScene(Scene):
+
+    def __init__(self, vp):
+        super().__init__(vp)
+        transparent_surface = pygame.Surface(vp)
+        transparent_surface.set_alpha(128)
+        transparent_surface.fill((0, 0, 0))
+        self.overlay = transparent_surface
+
+    def draw(self, surface = None):
+        if surface is not None:
+            self.set_target(surface)
+        self._target.blit(self.overlay, (0, 0))
+        str = "Game Paused\n" \
+              "mini-help\n" \
+              "use arrow keys to move camera\n" \
+              "use \"c\" key to center the map\n" \
+              "use \"p\" to pause/run game"
+        label = ui.TextWidget(str, (200, 0, 50))
+        label.draw_to(self._target)
+
 
 def main():
 
@@ -21,14 +69,10 @@ def main():
     config.sections()
     config.read(os.path.join(os.getcwd(), "config", "main.ini"))
 
-    """
-        map_config
-    """
+    # map_config
     l_map = config['MAIN']['map']
 
-    """
-        display config
-    """
+    # display config
     config_display = config['DISPLAY']
     display_width = int(config_display.get('width', 800))
     display_height = int(config_display.get('height', 600))
@@ -46,14 +90,15 @@ def main():
     pygame.init()
     display = pygame.display.set_mode(display_tup, display_flags)
 
-    paused_surface = pygame.Surface(display_tup)
-    paused_surface.set_alpha(128)
-    paused_surface.fill(clr)
+    map_surface = pygame.Surface(display_tup)
+
+
+    menu = MenuScene(display_tup)
 
     clock = pygame.time.Clock()
 
     camera = Camera(display_tup)
-    renderer = Renderer(display, camera)
+    renderer = Renderer(map_surface, camera)
 
     loader = slg.map.loader.tmx.TmxLoader()
 
@@ -101,10 +146,11 @@ def main():
             display.fill(clr)
             visible_area = camera.get_bounds()
             world_map.draw(visible_area)
+            display.blit(map_surface, (0, 0))
             camera.update()
         elif state == PAUSED:
             if previous_state != state:
-                display.blit(paused_surface, (0, 0))
+                menu.draw(display)
         pygame.display.update()
         clock.tick(30)
         # running = False
