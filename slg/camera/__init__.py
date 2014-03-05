@@ -12,9 +12,11 @@ class Camera(object):
     __tile_width = __tile_height = 0
     __map_width = __map_height = 0
 
+    movement_speed = 10
+    mouse_moving = False
+
     __edges = {'left': 0, 'right': 0, 'top': 0, 'bottom': 0}
 
-    MOVEMENT_SPEED = 40
     MOVEMENT_POSITIVE = 1
     MOVEMENT_NEGATIVE = -1
     MOVEMENT_STOP = 0
@@ -29,10 +31,21 @@ class Camera(object):
         self.__map_width = map_dimensions[0]
         self.__map_height = map_dimensions[1]
 
+        self.movement_speed = int((tile_dimensions[0]+tile_dimensions[1])/3)
+
         self.__edges['left'] = tile_dimensions[0]/2
         self.__edges['top'] = tile_dimensions[1]/2
         self.__edges['right'] = map_dimensions[0] * tile_dimensions[0] - tile_dimensions[0]/2
         self.__edges['bottom'] = map_dimensions[1] * tile_dimensions[1] / 2 - tile_dimensions[1]/2
+
+    def m_speed(self):
+        if self.mouse_moving:
+            return self.movement_speed / 2
+        else:
+            return self.movement_speed
+
+    def set_mouse_moving(self, mouse_moving):
+        self.mouse_moving = bool(mouse_moving)
 
     def set_moving_x(self, movement):
         self.moving_x = movement
@@ -54,15 +67,15 @@ class Camera(object):
 
     def update(self):
         d = 0
-        self.__current_x += self.moving_x * self.MOVEMENT_SPEED
-        if self.__current_x < self.__edges['left'] - d:
+        self.__current_x += self.moving_x * self.m_speed()
+        if self.__current_x - self.movement_speed < self.__edges['left'] - d:
             self.__current_x = self.__tile_width - d
-        if self.__current_x + self.__width > self.__edges['right'] + d:
+        elif self.__current_x + self.__width + self.movement_speed > self.__edges['right'] + d:
             self.__current_x = self.__edges['right'] - self.__width - self.__tile_width / 2 + d
-        self.__current_y += self.moving_y * self.MOVEMENT_SPEED
-        if self.__current_y < self.__edges['top'] - d:
+        self.__current_y += self.moving_y * self.m_speed()
+        if self.__current_y - self.movement_speed / 2 < self.__edges['top'] - d:
             self.__current_y = self.__tile_height - d
-        if self.__current_y + self.__height > self.__edges['bottom'] + d:
+        elif self.__current_y + self.__height + self.movement_speed / 2 > self.__edges['bottom'] + d:
             self.__current_y = self.__edges['bottom'] - self.__height - self.__tile_height / 2 + d
 
     def get_bounds(self):
@@ -76,3 +89,6 @@ class Camera(object):
         bottom = bottom if bottom < self.__map_height else self.__map_height
 
         return left, right, top, bottom
+
+    def get_edges(self):
+        return self.__edges

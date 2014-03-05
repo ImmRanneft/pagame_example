@@ -19,7 +19,7 @@ class Map(object):
         self.__renderer = renderer
         self.l_map = l_map
 
-    def load(self, app):
+    def load(self):
         self.__loader.load(self.l_map)
         [self.__world_center_x, self.__world_center_y] = self.__loader.get_map_dimensions()
         self.__world_center_x /= 2
@@ -32,8 +32,6 @@ class Map(object):
         for tile in self.__loader.get_tiles():
             [x, y] = tile.get_coordinates()
             self.__layer.append(tile, x, y)
-
-        app.set_state(0)
 
     def get_world_center(self):
         return self.__world_center_x, self.__world_center_y

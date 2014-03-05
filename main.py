@@ -3,7 +3,6 @@
 
 import os
 import configparser
-
 import pygame
 from pygame.locals import *
 
@@ -16,10 +15,12 @@ from slg import Application, RUNNING, PAUSED, LOADING
 
 
 def main():
-
     config = configparser.ConfigParser()
     config.sections()
     config.read(os.path.join(os.getcwd(), "config", "main.ini"))
+
+    music = os.path.join(os.getcwd(), "data", 'sound', "tristram.mp3")
+
 
     # map_config
     l_map = config['MAIN']['map']
@@ -30,8 +31,13 @@ def main():
     display_height = int(config_display.get('height', 600))
     display_tup = (display_width, display_height)
 
+    pygame.init()
+    pygame.mixer.init()
+    pygame.mixer.music.load(music)
+    pygame.mixer.music.play()
+
     fullscreen = int(config_display.get('fullscreen', 0))
-    display_flags = 0
+    display_flags = DOUBLEBUF | HWSURFACE
     if fullscreen == 1:
         display_flags |= FULLSCREEN
         videoinfo = pygame.display.Info()
@@ -39,10 +45,11 @@ def main():
 
     clr = (0, 0, 0)
 
-    pygame.init()
     display = pygame.display.set_mode(display_tup, display_flags)
 
     app = Application(display)
+    app.running(True)
+    app.set_state(LOADING)
 
     clock = pygame.time.Clock()
 
@@ -56,13 +63,11 @@ def main():
     s_loading = slg.scene.loadingscene.LoadingScene(display_tup, app)
     s_loading.set_target(display)
 
-    app.running(True)
-
     while app.running():
+        display.fill(clr)
         if app.get_state() == LOADING:
             app.push_scene(s_loading)
         elif app.get_state() == RUNNING:
-            display.fill(clr)
             app.push_scene(s_map)
         elif app.get_state() == PAUSED:
             app.push_scene(s_map)
@@ -70,7 +75,7 @@ def main():
         app.update()
         # exit()
         pygame.display.update()
-        clock.tick(30)
+        clock.tick(60)
         # running = False
 
 if __name__ == "__main__":

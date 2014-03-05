@@ -35,6 +35,8 @@ class Application(object):
     def update(self):
         events = pygame.event.get()
         for e in events:
+            if e.type == QUIT:
+                self.run = False
             if e.type == KEYDOWN:
                 if (e.key == K_F4 and pygame.key.get_mods() and pygame.KMOD_ALT) or e.key == K_ESCAPE:
                     self.run = False
