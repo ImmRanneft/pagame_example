@@ -8,63 +8,14 @@ import pygame
 from pygame.locals import *
 
 import slg
+import slg.scene.menuscene
 from slg.camera import Camera
 from slg.map.locals import *
 from slg.map.map import Map
 from slg.renderer import Renderer
-import slg.ui as ui
 
 PAUSED = 0
 RUNNING = 1
-
-
-class Scene(object):
-
-    _surface = _target = None
-
-    def __init__(self, vp):
-        self._surface = pygame.Surface(vp)
-
-    def set_target(self, surface):
-        self._target = surface
-
-    def draw(self, surface=None):
-        if surface:
-            self.set_target(surface)
-        if self._target is not None:
-            self._target.blit(self._surface, (0, 0))
-
-    def append(self, surface, dest):
-        self._surface.blit(surface, dest)
-
-    def get_surface(self):
-        return self._surface
-
-
-class MenuScene(Scene):
-
-    def __init__(self, vp):
-        super().__init__(vp)
-        transparent_surface = pygame.Surface(vp)
-        transparent_surface.set_alpha(128)
-        transparent_surface.fill((0, 0, 0))
-        self.overlay = transparent_surface
-        str = "Game Paused\n" \
-              "mini-help\n" \
-              "use arrow keys to move camera\n" \
-              "use \"c\" key to center the map\n" \
-              "use \"p\" to pause/run game"
-        self.label = ui.TextWidget((200, 200, 200))
-        self.label.set_text(str)
-
-    def draw(self, surface = None):
-        if surface is not None:
-            self.set_target(surface)
-
-        self._target.blit(self.overlay, (0, 0))
-        self.label.set_target(self._target)
-        self.label.draw()
-
 
 def main():
 
@@ -95,8 +46,7 @@ def main():
 
     map_surface = pygame.Surface(display_tup)
 
-
-    menu = MenuScene(display_tup)
+    menu = slg.scene.menuscene.MenuScene(display_tup)
 
     clock = pygame.time.Clock()
 
