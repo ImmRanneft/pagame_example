@@ -5,6 +5,8 @@ import sys
 company_name = 'slg'
 product_name = 'pg'
 
+
+
 bdist_msi_options = {
     'add_to_path': False,
     'initial_target_dir': r'[ProgramFilesFolder]\%s\%s' % (company_name, product_name),
@@ -14,10 +16,10 @@ buildOptions = dict(packages=[], excludes=['html', 'email', 'socket', 'bz2', 'ss
                     include_files=['data/', 'config/'], icon='icon.ico', optimize=2)
 
 base = 'Win32GUI' if sys.platform == 'win32' else None
-targetName = 'pg.exe' if sys.platform == 'win32' else 'pg'
+tname = 'pg.exe' if sys.platform == 'win32' else 'pg'
 version = '0.1.1'
 executables = [
-    Executable('main.py', base=base, targetName, appendScriptToExe=True, compress=True)
+    Executable('main.py', base=base, targetName=tname, appendScriptToExe=True, compress=True,)
 ]
 
 setup(name='pg',
@@ -25,6 +27,5 @@ setup(name='pg',
       description='simple game test',
       author='Den',
       author_email='denis@ranneft.ru',
-      
       options=dict(build_exe=buildOptions, bdist_msi=bdist_msi_options),
       executables=executables)
