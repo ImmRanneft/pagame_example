@@ -17,7 +17,7 @@ base = 'Win32GUI' if sys.platform == 'win32' else None
 targetName = 'pg.exe' if sys.platform == 'win32' else 'pg'
 version = '0.1.1'
 executables = [
-    Executable('main.py', base=base, targetName=targetName, appendScriptToExe=True, compress=True)
+    Executable('main.py', base=base, targetName, appendScriptToExe=True, compress=True)
 ]
 
 setup(name='pg',
