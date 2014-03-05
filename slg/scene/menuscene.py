@@ -4,10 +4,11 @@ import pygame
 from slg.scene.scene import Scene
 import slg.ui as ui
 
+
 class MenuScene(Scene):
 
-    def __init__(self, vp):
-        super().__init__(vp)
+    def __init__(self, vp, app):
+        super().__init__(vp, app)
         transparent_surface = pygame.Surface(vp)
         transparent_surface.set_alpha(128)
         transparent_surface.fill((0, 0, 0))
@@ -20,10 +21,10 @@ class MenuScene(Scene):
         self.label = ui.TextWidget((200, 200, 200))
         self.label.set_text(str)
 
-    def draw(self, surface = None):
+    def draw(self, surface=None):
         if surface is not None:
             self.set_target(surface)
-
-        self._target.blit(self.overlay, (0, 0))
-        self.label.set_target(self._target)
-        self.label.draw()
+        if self._target is not None:
+            self._target.blit(self.overlay, (0, 0))
+            self.label.set_target(self._target)
+            self.label.draw()

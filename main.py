@@ -9,13 +9,11 @@ from pygame.locals import *
 
 import slg
 import slg.scene.menuscene
-from slg.camera import Camera
+import slg.scene.mapscene
+import slg.scene.loadingscene
 from slg.map.locals import *
-from slg.map.map import Map
-from slg.renderer import Renderer
+from slg import Application, RUNNING, PAUSED, LOADING
 
-PAUSED = 0
-RUNNING = 1
 
 def main():
 
@@ -44,67 +42,33 @@ def main():
     pygame.init()
     display = pygame.display.set_mode(display_tup, display_flags)
 
-    map_surface = pygame.Surface(display_tup)
-
-    menu = slg.scene.menuscene.MenuScene(display_tup)
+    app = Application(display)
 
     clock = pygame.time.Clock()
 
-    camera = Camera(display_tup)
-    renderer = Renderer(map_surface, camera)
+    s_menu = slg.scene.menuscene.MenuScene(display_tup, app)
 
-    loader = slg.map.loader.tmx.TmxLoader()
-
+    s_map = slg.scene.mapscene.MapScene(display, app)
     l_map = os.path.realpath(os.path.join(os.getcwd(), "data", "maps", l_map))
-    world_map = Map(l_map, renderer, loader)
+    s_map.set_map(l_map)
+    s_map.set_target(display)
 
-    camera.set_dimensions(world_map.get_tile_dimensions(), world_map.get_map_dimensions())
-    camera.reset_camera_to((0, 0))
+    s_loading = slg.scene.loadingscene.LoadingScene(display_tup, app)
+    s_loading.set_target(display)
 
-    running = True
-    state = RUNNING
-    while running:
-        previous_state = state
-        for e in pygame.event.get():
-            if state != PAUSED:
-                if e.type == KEYDOWN:
-                    if e.key == K_DOWN:
-                        camera.set_moving_y(camera.MOVEMENT_POSITIVE)
-                    if e.key == K_UP:
-                        camera.set_moving_y(camera.MOVEMENT_NEGATIVE)
-                    if e.key == K_RIGHT:
-                        camera.set_moving_x(camera.MOVEMENT_POSITIVE)
-                    if e.key == K_LEFT:
-                        camera.set_moving_x(camera.MOVEMENT_NEGATIVE)
-                if e.type == KEYUP:
-                    if e.key == K_UP or e.key == K_DOWN:
-                        camera.set_moving_y(camera.MOVEMENT_STOP)
-                    if e.key == K_LEFT or e.key == K_RIGHT:
-                        camera.set_moving_x(camera.MOVEMENT_STOP)
-                    if e.key == K_c:
-                        camera.reset_camera_to((world_map.get_world_center()))
-            if e.type == KEYDOWN:
-                if (e.key == K_F4 and pygame.key.get_mods() and pygame.KMOD_ALT) or e.key == K_ESCAPE:
-                    running = False
-            if e.type == KEYUP:
-                if e.key == K_p:
-                    if state == PAUSED:
-                        state = RUNNING
-                        print('running')
-                    else:
-                        state = PAUSED
-                        print('paused')
+    app.running(True)
 
-        if state == RUNNING:
+    while app.running():
+        if app.get_state() == LOADING:
+            app.push_scene(s_loading)
+        elif app.get_state() == RUNNING:
             display.fill(clr)
-            visible_area = camera.get_bounds()
-            world_map.draw(visible_area)
-            display.blit(map_surface, (0, 0))
-            camera.update()
-        elif state == PAUSED:
-            # if previous_state != state:
-            display.blit(map_surface, (0, 0))
-            menu.draw(display)
+            app.push_scene(s_map)
+        elif app.get_state() == PAUSED:
+            app.push_scene(s_map)
+            app.push_scene(s_menu)
+        app.update()
+        # exit()
         pygame.display.update()
         clock.tick(30)
         # running = False
