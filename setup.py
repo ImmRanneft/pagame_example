@@ -17,7 +17,7 @@ buildOptions = dict(packages=[], excludes=['html', 'email', 'socket', 'bz2', 'ss
 
 base = 'Win32GUI' if sys.platform == 'win32' else None
 tname = 'pg.exe' if sys.platform == 'win32' else 'pg'
-version = '0.1.1'
+version = '0.1.2'
 executables = [
     Executable('main.py', base=base, targetName=tname, appendScriptToExe=True, compress=True,)
 ]
