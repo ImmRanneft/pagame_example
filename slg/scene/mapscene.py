@@ -8,17 +8,18 @@ import pygame.mouse
 from pygame.locals import *
 
 import slg.map.loader.tmx
+import slg
 
 from slg.renderer import Renderer
 from slg.camera import Camera
 from slg.scene import Scene
 from slg.map.map import Map
-from slg import RUNNING, PAUSED, LOADING
 
 
 class MapScene(Scene):
 
     _map_surface = None
+    image = None
     _world_map = None
     _updated = False
     loading_thread = None
@@ -28,9 +29,11 @@ class MapScene(Scene):
         self.display = display
         display_size = display.get_size()
 
-        super().__init__(display_size, app)
+        super().__init__(display, app)
 
-        self._map_surface = pygame.Surface(display_size)
+        self.image = self._map_surface = pygame.Surface(display_size)
+        self.rect = self.image.get_rect()
+
         self.camera = Camera(display_size)
         self.renderer = Renderer(self._map_surface, self.camera)
         self.loader = slg.map.loader.tmx.TmxLoader()
@@ -38,7 +41,7 @@ class MapScene(Scene):
     def set_map(self, map_name):
         self._world_map = Map(map_name, self.renderer, self.loader)
         self.loading_thread = LoadingThread(self._world_map, self._app, self.camera)
-        self._app.set_state(LOADING)
+        self._app.set_state(slg.LOADING)
         self.loading_thread.start()
 
     def poll_events(self, events):
@@ -46,7 +49,7 @@ class MapScene(Scene):
         mouse_moving_x = mouse_moving_y = False
 
         for e in events:
-            if self._app.get_state() != PAUSED:
+            if self._app.get_state() != slg.PAUSED:
                 if e.type == KEYDOWN:
                     if e.key == K_DOWN:
                         self.camera.set_moving_y(self.camera.MOVEMENT_POSITIVE)
@@ -72,7 +75,7 @@ class MapScene(Scene):
 
         keyboard_moving = self.keyboard_moving_x or self.keyboard_moving_y
 
-        if self._app.get_state() == RUNNING and not keyboard_moving:
+        if self._app.get_state() == slg.RUNNING and not keyboard_moving:
             vp = self.camera.get_dimensions()
             mouse_pos = pygame.mouse.get_pos()
 
@@ -80,7 +83,6 @@ class MapScene(Scene):
             focused = pygame.mouse.get_focused()
             if 0 <= mouse_pos[0] < 0 + padding and focused:
                 self.camera.set_moving_x(self.camera.MOVEMENT_NEGATIVE)
-                print(mouse_pos)
                 mouse_moving_x = True
             elif vp[0] >= mouse_pos[0] > vp[0] - padding and focused:
                 self.camera.set_moving_x(self.camera.MOVEMENT_POSITIVE)
@@ -101,7 +103,7 @@ class MapScene(Scene):
 
         self.camera.set_mouse_moving(mouse_moving)
 
-    def draw(self, surface: pygame.Surface=None):
+    def update(self, surface: pygame.Surface=None):
         if surface is not None:
             self.set_target(surface)
         if self._target is not None:
@@ -123,6 +125,6 @@ class LoadingThread(threading.Thread):
 
     def run(self):
         self._world_map.load()
-        self._app.set_state(PAUSED)
+        self._app.set_state(slg.PAUSED)
         self.camera.set_dimensions(self._world_map.get_tile_dimensions(), self._world_map.get_map_dimensions())
         self.camera.reset_camera_to((0, 0))

@@ -13,7 +13,8 @@ class MenuScene(Scene):
         transparent_surface = pygame.Surface(display.get_size())
         transparent_surface.set_alpha(128)
         transparent_surface.fill((0, 0, 0))
-        self.overlay = transparent_surface
+        self.image = transparent_surface
+        self.rect = self.image.get_rect()
         str = "Game Paused\n" \
               "mini-help\n" \
               "use arrow keys to move camera\n" \
@@ -22,10 +23,10 @@ class MenuScene(Scene):
         self.label = ui.TextWidget((200, 200, 200))
         self.label.set_text(str)
 
-    def draw(self, surface=None):
+    def update(self, surface=None):
         if surface is not None:
             self.set_target(surface)
         if self._target is not None:
-            self._target.blit(self.overlay, (0, 0))
+            self._target.blit(self.image, (0, 0))
             self.label.set_target(self._target)
             self.label.draw()

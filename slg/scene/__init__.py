@@ -3,13 +3,15 @@ __author__ = "Den"
 import pygame
 
 
-class Scene(object):
+class Scene(pygame.sprite.Sprite):
 
-    _surface = _target = None
+    image = _target = None
+    rect = None
     _app = None
 
     def __init__(self, display: pygame.display, app):
-        self._surface = pygame.Surface(display.get_size())
+        self.image = pygame.Surface(display.get_size())
+        self.rect = self.image.get_rect()
         self.set_app(app)
 
     def set_app(self, app):
@@ -18,17 +20,17 @@ class Scene(object):
     def set_target(self, surface):
         self._target = surface
 
-    def draw(self, surface=None):
+    def update(self, surface=None):
         if surface:
             self.set_target(surface)
         if self._target is not None:
-            self._target.blit(self._surface, (0, 0))
+            self._target.blit(self.image, (0, 0))
 
     def append(self, surface, dest):
-        self._surface.blit(surface, dest)
+        self.image.blit(surface, dest)
 
     def get_surface(self):
-        return self._surface
+        return self.image
 
     def poll_events(self, events):
         pass

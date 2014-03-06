@@ -12,9 +12,10 @@ class LoadingScene(Scene):
     def __init__(self, display: pygame.display, app):
         super().__init__(display, app)
         image = pygame.image.load(os.path.join(os.getcwd(), 'data', 'gui', 'loading_screen.jpg'))
-        self.surface = pygame.Surface(display.get_size())
+        self.image = pygame.Surface(display.get_size())
+        self.rect = self.image.get_rect()
         image_size = image.get_size()
-        surface_size = self.surface.get_size()
+        surface_size = self.image.get_size()
 
         x = int((image_size[0] - surface_size[0]) / 2)
         y = int((image_size[1] - surface_size[1]) / 2)
@@ -28,14 +29,14 @@ class LoadingScene(Scene):
             image = pygame.transform.scale(image, (image_size[0], surface_size[1]))
             y = 0
 
-        self.surface.blit(image, (-x, -y))
+        self.image.blit(image, (-x, -y))
         self.label = ui.TextWidget((0, 100, 100), font_size=60)
         self.label.set_text('Loading, please wait')
-        self.label.set_target(self.surface)
+        self.label.set_target(self.image)
         self.label.draw()
 
-    def draw(self, surface=None):
+    def update(self, surface=None):
         if surface is not None:
             self.set_target(surface)
         if self._target is not None:
-            self._target.blit(self.surface, (0, 0))
+            self._target.blit(self.image, (0, 0))
