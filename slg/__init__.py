@@ -7,7 +7,7 @@ from slg.map.locals import *
 from slg.map.loader.tmx import *
 from slg.renderer import Renderer
 from slg.ui import *
-import slg.scene.scene
+import slg.scene
 import pygame
 from pygame.locals import *
 from collections import OrderedDict
@@ -27,7 +27,7 @@ class Application(object):
         self.display = display
         self.clock = pygame.time.Clock()
 
-    def push_scene(self, scene: slg.scene.scene.Scene):
+    def push_scene(self, scene: slg.scene.Scene):
         scene.set_app(self)
         length = len(self._scenes_to_render)
         self._scenes_to_render[length] = scene

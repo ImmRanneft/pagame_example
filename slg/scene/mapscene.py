@@ -11,7 +11,7 @@ import slg.map.loader.tmx
 
 from slg.renderer import Renderer
 from slg.camera import Camera
-from slg.scene.scene import Scene
+from slg.scene import Scene
 from slg.map.map import Map
 from slg import RUNNING, PAUSED, LOADING
 

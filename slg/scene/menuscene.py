@@ -1,15 +1,16 @@
 __author__ = "Den"
 
 import pygame
-from slg.scene.scene import Scene
+from slg.scene import Scene
 import slg.ui as ui
 
 
 class MenuScene(Scene):
 
-    def __init__(self, vp, app):
-        super().__init__(vp, app)
-        transparent_surface = pygame.Surface(vp)
+    def __init__(self, display: pygame.display, app):
+
+        super().__init__(display, app)
+        transparent_surface = pygame.Surface(display.get_size())
         transparent_surface.set_alpha(128)
         transparent_surface.fill((0, 0, 0))
         self.overlay = transparent_surface
