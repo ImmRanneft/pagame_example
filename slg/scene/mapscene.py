@@ -108,7 +108,7 @@ class MapScene(Scene):
             self.set_target(surface)
         if self._target is not None:
             visible_area = self.camera.get_bounds()
-            self._world_map.draw(visible_area)
+            self._world_map.draw(visible_area, self._map_surface)
             self.camera.update()
             self._target.blit(self._map_surface, (0, 0))
 
@@ -125,6 +125,6 @@ class LoadingThread(threading.Thread):
 
     def run(self):
         self._world_map.load()
-        self._app.set_state(slg.PAUSED)
         self.camera.set_dimensions(self._world_map.get_tile_dimensions(), self._world_map.get_map_dimensions())
         self.camera.reset_camera_to((0, 0))
+        self._app.set_state(slg.PAUSED)

@@ -5,9 +5,10 @@ from slg.map.locals import *
 import pygame
 import random
 
+
 class Map(object):
 
-    __layer = __renderer = __loader = None
+    __renderer = __loader = None
     __layers = list()
 
     __world_bounding_left = __world_bounding_right = 0
@@ -29,17 +30,13 @@ class Map(object):
             layer.set_renderer(self.__renderer)
             self.__layers.append(layer)
 
-        for tile in self.__loader.get_tiles():
-            [x, y] = tile.get_coordinates()
-            self.__layer.append(tile, x, y)
-
     def get_world_center(self):
         return self.__world_center_x, self.__world_center_y
 
-    def draw(self, visible_area):
+    def draw(self, visible_area, surface):
         for layer in self.get_layers():
             layer.set_visible_area(visible_area)
-            layer.draw()
+            layer.draw(surface)
 
     def get_layers(self):
         return self.__layers

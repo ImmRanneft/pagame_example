@@ -2,6 +2,7 @@ __author__ = 'Den'
 
 import pygame
 
+
 class Tile(object):
 
     __coordinates = [0, 0]
@@ -13,6 +14,7 @@ class Tile(object):
 
     def __init__(self, template):
         self.__template = template
+        self.image = self.get_image()
 
     def get_template(self):
         return self.__template
@@ -22,15 +24,6 @@ class Tile(object):
 
     def get_coordinates(self):
         return self.__coordinates
-
-    def get_dimensions(self):
-        return self.__template.get_dimensions()
-
-    def get_offset(self):
-        return self.__template.get_offset()
-
-    def get_image(self):
-        return self.__template.get_image()
 
     def set_rect(self, rect):
         self.__rect = rect
@@ -54,5 +47,21 @@ class Tile(object):
         tile_y -= dy
         return tile_y
 
+    def draw(self, surface, renderer):
+        pixelCoordinates = renderer.translate(self)
+        surface.blit(self.get_image(), pixelCoordinates, self.get_rect())
+
     def get_id(self):
         return self.__template.gid
+
+    def get_regular_tile_dimensions(self):
+        return self.__template.get_regular_tile_dimensions()
+
+    def get_dimensions(self):
+        return self.__template.get_dimensions()
+
+    def get_offset(self):
+        return self.__template.get_offset()
+
+    def get_image(self):
+        return self.__template.get_image()

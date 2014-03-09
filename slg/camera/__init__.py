@@ -11,6 +11,9 @@ class Camera(object):
     __left = __right = __top = __bottom = 0
     __tile_width = __tile_height = 0
     __map_width = __map_height = 0
+    _virtual_map_width = _virtual_map_height = 0
+    return_right_edge_only_map = False
+    return_bottom_edge_only_map = False
 
     movement_speed = 10
     mouse_moving = False
@@ -30,13 +33,24 @@ class Camera(object):
         self.__tile_height = tile_dimensions[1]
         self.__map_width = map_dimensions[0]
         self.__map_height = map_dimensions[1]
+        if self.__map_width < self.__width / self.__tile_width:
+            self._virtual_map_width = int(self.__width / self.__tile_width) + 1
+            self.return_right_edge_only_map = True
+        else:
+            self._virtual_map_width = self.__map_width
+        if self.__map_height < self.__height / (self.__tile_height / 2):
+            self._virtual_map_height = int(self.__height / (self.__tile_height / 2)) + 1
+            self.return_bottom_edge_only_map = True
+        else:
+            self._virtual_map_height = self.__map_height
+
 
         self.movement_speed = int((tile_dimensions[0]+tile_dimensions[1])/3)
 
         self.__edges['left'] = tile_dimensions[0]/2
         self.__edges['top'] = tile_dimensions[1]/2
-        self.__edges['right'] = map_dimensions[0] * tile_dimensions[0] - tile_dimensions[0]/2
-        self.__edges['bottom'] = map_dimensions[1] * tile_dimensions[1] / 2 - tile_dimensions[1]/2
+        self.__edges['right'] = self._virtual_map_width * tile_dimensions[0] - tile_dimensions[0]/2
+        self.__edges['bottom'] = self._virtual_map_height * tile_dimensions[1] / 2 - tile_dimensions[1]/2
 
     def m_speed(self):
         if self.mouse_moving:
@@ -78,15 +92,27 @@ class Camera(object):
         elif self.__current_y + self.__height + self.movement_speed / 2 > self.__edges['bottom'] + d:
             self.__current_y = self.__edges['bottom'] - self.__height - self.__tile_height / 2 + d
 
+        if self.__map_width < self._virtual_map_width:
+            self.__current_x = ((self._virtual_map_width - self.__map_width) * self.__tile_width / 2)
+        elif self.__current_x < 0:
+            self.__current_x = self.__edges['left']
+
+        if self.__map_height < self._virtual_map_height:
+            self.__current_y = -((self._virtual_map_height - self.__map_height) * self.__tile_height / 4)
+        elif self.__current_y < 0:
+            self.__current_y = self.__edges['top']
+
     def get_bounds(self):
         left = math.floor(self.__current_x / self.__tile_width - 1)
         left = left if 0 < left else 0
         right = math.ceil((self.__current_x + self.__width) / self.__tile_width + 1)
-        right = right if right < self.__map_width else self.__map_width
+        right = right if right < self.__map_width else self._virtual_map_width
+        right = right if not self.return_right_edge_only_map else self._virtual_map_width
         top = math.floor(self.__current_y / self.__tile_height - 1)
         top = top if 0 < top else 0
         bottom = math.ceil((self.__current_y + self.__height) / (self.__tile_height / 2) + 1)
-        bottom = bottom if bottom < self.__map_height else self.__map_height
+        bottom = bottom if bottom < self.__map_height else self._virtual_map_height
+        bottom = bottom if not self.return_bottom_edge_only_map else self._virtual_map_height
 
         return left, right, top, bottom
 
