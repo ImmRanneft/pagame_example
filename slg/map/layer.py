@@ -1,102 +1,35 @@
-__author__ = 'Den'
-
-from slg.map.tile import Tile
-import pygame
-
-
-class Stub(object):
-
-    __coordinates = [0, 0]
-    __display_coordinates = [0, 0]
-    __rectangle = [0, 0, 0, 0]
-    __dimensions = [0, 0]
-    __offset = [0, 0]
-    image = None
-
-    def __init__(self):
-        self.image = pygame.Surface((64, 32))
-        self.image.fill((0, 0, 0))
-
-    def coordinates(self, coordinates):
-        self.__coordinates = coordinates
-
-    def get_coordinates(self):
-        return self.__coordinates
-
-    def draw(self, surface, renderer):
-        pixelCoordinates = renderer.translate(self)
-        surface.blit(self.get_image(), pixelCoordinates)
-
-    def get_id(self):
-        return 0
-
-    def get_regular_tile_dimensions(self):
-        return (64, 32)
-
-    def get_dimensions(self):
-        return (64, 32)
-
-    def get_offset(self):
-        return (0, 0)
-
-    def get_image(self):
-        return self.image
+__author__ = 'den'
 
 
 class Layer(object):
+    """
+    Simple layer, that holds all this tiles and determinates which of them have to be drawn depending in visible_area
+    """
 
-    __left = __right = __top = __bottom = 0
-    __renderer = None
-    __container = [[]]
-    __order = 0
+    _name = ''
 
-    def __init__(self, order):
-        self.__order = order
-        self._stub = Stub()
+    _order = 0
 
-    def set_renderer(self, renderer):
-        self.__renderer = renderer
+    _visible_area = {'left': 0, 'right': 0, 'top': 0, 'bottom': 0}
 
-    def get_container(self):
-        return self.__container
+    _container = [[]]
 
-    def set_dimensions(self, dimensions):
-        layer_width, layer_height = int(dimensions[0]), int(dimensions[1])
-        # world_height = int(dimensions[1])
-        self.__container = [[Tile for x in range(0, layer_height)] for x in range(0, layer_width)]
+    def __init__(self):
+        pass
 
-    def set_visible_area(self, visible_area):
-        self.__left = visible_area[0]
-        self.__right = visible_area[1]
-        self.__top = visible_area[2]
-        self.__bottom = visible_area[3]
+    # setters and getters
+    def get_name(self):
+        return self._name
 
-    def draw(self, surface):
-        for col in range(self.__top, self.__bottom):
-            for row in range(self.__left, self.__right):
-                try:
-                    # if self.__container[row] is not None and self.__container[row][col] is not None:
-                    tile = self.__container[row][col]
-                    if (tile.get_id() > 0):
-                        tile.draw(surface, self.__renderer)
-                except IndexError:
-                    self._stub.coordinates([row, col])
-                    self._stub.draw(surface, self.__renderer)
-                    pass
-                except AttributeError:
-                    # print(tile, row, col)
-                    row, col
+    def set_name(self, name: str):
+        self._name = name
 
-    def append(self, tile, tilex, tiley):
-        try:
-            self.__container[tilex][tiley] = tile
-        except IndexError:
-            tilex, tiley
+    name = property(get_name, set_name)
 
-    def get(self, coordinates = None):
-        if coordinates is not None:
-            i = coordinates[0]
-            j = coordinates[1]
-            return self.__container[i][j]
-        else:
-            return self.__container
+    def get_order(self):
+        return self._order
+
+    def set_order(self, order: int):
+        self._order = order
+
+    order = property(get_order, set_order)

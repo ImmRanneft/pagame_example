@@ -1,48 +1,29 @@
-__author__ = 'Den'
+__author__ = 'den'
 
-from slg.map.tile import Tile
-from slg.map.locals import *
-import pygame
-import random
+
+from collections import OrderedDict
+from slg.map.layer import Layer
+from slg.map.objectgroup import ObjectGroup
 
 
 class Map(object):
+    """
+    Map object, holds layers and objects
+    """
 
-    __renderer = __loader = None
-    __layers = list()
+    _layers = OrderedDict
 
-    __world_bounding_left = __world_bounding_right = 0
-    __world_bounding_top = __world_bounding_bottom = 0
-    __world_center_x = __world_center_y = 0
+    _object_groups = OrderedDict
 
-    def __init__(self, l_map, renderer, loader):
-        self.__loader = loader
-        self.__renderer = renderer
-        self.l_map = l_map
+    _loader = None
+
+    def __init__(self):
+        pass
 
     def load(self):
-        self.__loader.load(self.l_map)
-        [self.__world_center_x, self.__world_center_y] = self.__loader.get_map_dimensions()
-        self.__world_center_x /= 2
-        self.__world_center_y /= 2
 
-        for layer in self.__loader.get_layers():
-            layer.set_renderer(self.__renderer)
-            self.__layers.append(layer)
+    def add_layer(self, layer: Layer):
+        self._layers[layer.get_name()] = layer
 
-    def get_world_center(self):
-        return self.__world_center_x, self.__world_center_y
-
-    def draw(self, visible_area, surface):
-        for layer in self.get_layers():
-            layer.set_visible_area(visible_area)
-            layer.draw(surface)
-
-    def get_layers(self):
-        return self.__layers
-
-    def get_tile_dimensions(self):
-        return self.__loader.get_tile_dimensions()
-
-    def get_map_dimensions(self):
-        return self.__loader.get_map_dimensions()
+    def add_object_group(self, object_group: ObjectGroup):
+        self._layers[object_group.get_name()] = object_group

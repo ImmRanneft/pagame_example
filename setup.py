@@ -2,7 +2,7 @@ from cx_Freeze import setup, Executable
 import sys
 # Dependencies are automatically detected, but it might need
 # fine tuning.
-company_name = 'slg'
+company_name = 'slg_old'
 product_name = 'pg'
 
 
