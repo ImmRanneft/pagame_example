@@ -1,9 +1,17 @@
 __author__ = 'den'
 
+import pygame
+import pygame.sprite
+import pygame.rect
 
-class Layer(object):
+
+class Layer(pygame.sprite.DirtySprite):
     """
     Simple layer, that holds all this tiles and determinates which of them have to be drawn depending in visible_area
+    @type _name: str
+    @type _order: int
+    @type image: pygame.SurfaceType
+    @type rect: pygame.rect.Rect
     """
 
     _name = ''
@@ -14,8 +22,11 @@ class Layer(object):
 
     _container = [[]]
 
-    def __init__(self):
-        pass
+    image = None
+    rect = None
+
+    def __init__(self, *groups):
+        super().__init__(*groups)
 
     # setters and getters
     def get_name(self):
@@ -31,5 +42,19 @@ class Layer(object):
 
     def set_order(self, order: int):
         self._order = order
+
+    def update(self, camera):
+        camera_bounds = camera.get_bounds()
+
+        for key, bound in camera_bounds:
+            if self._visible_area[key] != bound:
+                self._visible_area[key] = bound
+                self.dirty = 1
+        if self.dirty > 0:
+            self._render(camera)
+
+    def _render(self, camera):
+
+        self.rect = pygame.rect.Rect((camera.get_dest()), self.image.get_size())
 
     order = property(get_order, set_order)

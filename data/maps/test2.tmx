@@ -60041,5 +60041,10 @@
    <tile gid="0"/>
   </data>
  </layer>
- <objectgroup name="Слой объектов 1"/>
+ <objectgroup name="Слой объектов 1">
+  <object x="960" y="352" width="192" height="64" rotation="27"/>
+  <object x="896.102" y="480.207">
+   <polyline points="0,0 256,-128"/>
+  </object>
+ </objectgroup>
 </map>

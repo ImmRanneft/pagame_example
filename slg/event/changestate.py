@@ -15,5 +15,5 @@ class ChangeState(object):
         self._state = state
 
     def post(self):
-        self._event = pygame.event.Event(EVENT_CHANGE_STATE, state=self._state)
+        self._event = pygame.event.Event(EVENT_CHANGE_STATE, state=self._state, obj=self)
         pygame.event.post(self._event)
