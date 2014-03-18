@@ -3,9 +3,10 @@ __author__ = 'den'
 import pygame
 import pygame.sprite
 import pygame.rect
+from slg.map.tile import Tile
 
 
-class Layer(pygame.sprite.DirtySprite):
+class Layer(pygame.sprite.DirtySprite, pygame.sprite.Group):
     """
     Simple layer, that holds all this tiles and determinates which of them have to be drawn depending in visible_area
     @type _name: str
@@ -21,12 +22,13 @@ class Layer(pygame.sprite.DirtySprite):
     _visible_area = {'left': 0, 'right': 0, 'top': 0, 'bottom': 0}
 
     _container = [[]]
-
+    _dimensions = pygame.rect.Rect
     image = None
     rect = None
 
-    def __init__(self, *groups):
-        super().__init__(*groups)
+    def __init__(self, *groups, *sprites):
+        super(Layer, pygame.sprite.DirtySprite).__init__(*groups)
+        super(Layer, pygame.sprite.Group).__init__(*sprites)
 
     # setters and getters
     def get_name(self):
@@ -54,7 +56,30 @@ class Layer(pygame.sprite.DirtySprite):
             self._render(camera)
 
     def _render(self, camera):
-
         self.rect = pygame.rect.Rect((camera.get_dest()), self.image.get_size())
+
+    def set_dimensions(self, dimensions: pygame.rect.Rect):
+        self._dimensions = dimensions
+
+    def draw(self, renderer):
+        for tile in self.sprites():
+            if tile.get_id() > 0:
+                tile_rect = renderer.map_to_screen(tile)
+                image_rect = tile.get_image_rect()
+                self.image.blit(tile.image, tile_rect, tile.rect)
+
+    def append(self, tile, tilex, tiley):
+        try:
+            self.__container[tilex][tiley] = tile
+        except IndexError:
+            print('append_error:', tilex, tiley)
+
+    def get(self, coordinates = None):
+        if coordinates is not None:
+            i = coordinates[0]
+            j = coordinates[1]
+            return self.__container[i][j]
+        else:
+            return self.__container
 
     order = property(get_order, set_order)
