@@ -9,6 +9,7 @@ import pygame.sprite
 
 import slg.ui.text
 import slg.ui.lifebar
+import slg.map.map
 
 from slg.locals import *
 from slg.map.selector import Selector
@@ -41,6 +42,8 @@ class GameScene(AbstractScene):
         string = codecs.open(os.path.join(TEXTS_DIR, 'welcome.txt'), 'r', encoding='UTF-8').read()
         styles = {'font_size': 18, 'align': (ALIGN_LEFT, ALIGN_TOP)}
         slg.ui.text.Text(string, display_surface, self.group, **styles)
+        self.map = slg.map.map.Map()
+        self.map.load('test6.tmx')
 
     def get_group(self):
         return self.group

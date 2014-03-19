@@ -1,10 +1,9 @@
 __author__ = 'den'
 
-from slg.map.map import Map
 
 class Tmx(object):
 
-    _map_object = Map
+    _map_object = None
 
     def __init__(self):
         pass

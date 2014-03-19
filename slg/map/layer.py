@@ -26,9 +26,9 @@ class Layer(pygame.sprite.DirtySprite, pygame.sprite.Group):
     image = None
     rect = None
 
-    def __init__(self, *groups, *sprites):
-        super(Layer, pygame.sprite.DirtySprite).__init__(*groups)
-        super(Layer, pygame.sprite.Group).__init__(*sprites)
+    def __init__(self, **kwargs):
+        super(Layer, pygame.sprite.DirtySprite).__init__(kwargs.get('groups', list()))
+        super(Layer, pygame.sprite.Group).__init__(kwargs.get('sprites', list()))
 
     # setters and getters
     def get_name(self):
@@ -65,8 +65,7 @@ class Layer(pygame.sprite.DirtySprite, pygame.sprite.Group):
         for tile in self.sprites():
             if tile.get_id() > 0:
                 tile_rect = renderer.map_to_screen(tile)
-                image_rect = tile.get_image_rect()
-                self.image.blit(tile.image, tile_rect, tile.rect)
+                self.image.blit(tile.image, tile_rect)
 
     def append(self, tile, tilex, tiley):
         try:
