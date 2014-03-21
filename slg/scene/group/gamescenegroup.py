@@ -8,7 +8,7 @@ from slg.event.changestate import ChangeState
 from slg.locals import *
 
 
-class GameSceneGroup(pygame.sprite.LayeredDirty):
+class GameSceneGroup(pygame.sprite.OrderedUpdates):
 
     """
     @type _scene: slg.scene.abstractscene.AbstractScene
@@ -31,10 +31,3 @@ class GameSceneGroup(pygame.sprite.LayeredDirty):
                 for sprite in self.sprites():
                     if sprite.rect.collidepoint(*mouse_pos):
                         sprite.events['click'](e, mouse_pos = mouse_pos)
-                        # if sprite.get_close_button().collidepoint(*mouse_pos):
-                        #     sprite.visible = 0
-                        #     sprite.dirty = 1
-                        #     ChangeState(GAME_STATE_RUNNING).post()
-                            # for group in sprite.groups():
-                            #     for spr in group.sprites():
-                            #         spr.dirty = 1

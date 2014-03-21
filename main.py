@@ -12,19 +12,6 @@ from slg.application.application import Application
 from slg.locals import *
 
 
-class Test(pygame.sprite.Sprite):
-
-    def __init__(self):
-        self.image = pygame.Surface((64, 64))
-        self.image.fill((255, 0, 0))
-        self.rect = pygame.rect.Rect(self.image.get_rect())
-
-    def update(self, move):
-        print(move)
-        print(self.rect.centerx, self.rect.topleft)
-        self.rect.move(move, move)
-
-
 def main():
     # pygame.init()
     # display = pygame.display.set_mode((400, 300))

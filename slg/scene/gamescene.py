@@ -10,6 +10,7 @@ import pygame.sprite
 import slg.ui.text
 import slg.ui.lifebar
 import slg.map.map
+import slg.renderer.staggered
 
 from slg.locals import *
 from slg.map.selector import Selector
@@ -32,25 +33,31 @@ class GameScene(AbstractScene):
         super().__init__(manager)
 
         self.group = GameSceneGroup(self)
+        self.map_group = GameSceneGroup(self)
 
         display_surface = self._manager.get_display()
 
         self.bg = pygame.Surface(display_surface.get_size())
-        self.bg.fill((0, 0, 0))
+
+
+        for layer in self.map.get_layers():
+            layer.add(self.map_group)
+            layer.draw(slg.renderer.staggered.Staggered())
+
         styles = {'font_size': 14, 'font': 'calibrii', 'text_color': (255, 255, 255), 'border': (5, 5)}
         slg.ui.lifebar.Lifebar(display_surface, self.group, **styles)
         string = codecs.open(os.path.join(TEXTS_DIR, 'welcome.txt'), 'r', encoding='UTF-8').read()
         styles = {'font_size': 18, 'align': (ALIGN_LEFT, ALIGN_TOP)}
         slg.ui.text.Text(string, display_surface, self.group, **styles)
-        self.map = slg.map.map.Map()
-        self.map.load('test6.tmx')
 
     def get_group(self):
         return self.group
 
     def handle_events(self, events):
         self.group.handle_events(events)
+        # self.map_group.handle_events(events)
         camera = self._manager.get_camera()
+        camera.update()
         camera.handle_events(events, self._manager)
         for e in events:
             if e.type == KEYDOWN:
@@ -66,10 +73,14 @@ class GameScene(AbstractScene):
 
     def draw(self):
         display_surface = self._manager.get_display()
-
-        self.group.clear(display_surface, self.bg)
-        self.group.draw(display_surface)
+        camera = self._manager.get_camera()
+        self.map_group.update(camera)
+        self.map_group.draw(self.bg)
+        # self.group.clear(display_surface, self.bg)
+        display_surface.fill((0, 0, 0))
+        display_surface.blit(self.bg, (0, 0))
         self.group.update(display_surface)
+        self.group.draw(display_surface)
 
     def update(self):
         pass

@@ -4,6 +4,8 @@ import pygame
 from pygame.time import Clock
 from pygame.locals import *
 
+import slg.map.map
+
 from slg.locals import *
 from slg.event import *
 from slg.application.camera import Camera
@@ -61,8 +63,7 @@ class Application(object):
         self._camera = Camera(self._display.get_size())
         self._clock = Clock()
 
-        map_name = self._config['MAIN']['map']
-        LoadMap(map_name).post()
+
 
     def get_display(self):
         return self._display
@@ -90,13 +91,18 @@ class Application(object):
         while self.running():
             events = pygame.event.get()
             for e in events:
+                if e.type == EVENT_LOAD_MAP:
+                    self.map = slg.map.map.Map()
+                    self.map.load(e.map_name)
+                    camera = self._manager.get_camera()
+                    camera.set_dimensions(self.map.get_tile_dimensions(), self.map.get_map_dimensions())
+                    camera.update()
+                    pass
                 if e.type == QUIT:
                     self._run = False
                 if e.type == KEYDOWN:
                     if (e.key == K_F4 and pygame.key.get_mods() and pygame.KMOD_ALT) or e.key == K_ESCAPE:
                         self._run = False
-                    if e.key == K_n:
-                        MapLoaded().post()
                     if e.key == K_s and pygame.key.get_mods() and pygame.KMOD_ALT:
                         print(self.get_state())
             self._manager.handle(events)

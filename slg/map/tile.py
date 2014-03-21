@@ -6,17 +6,29 @@ import pygame.rect
 
 class Tile(object):
 
-    id = 1
     image = None
     rect = None
     image_rect = None
     _template = None
+    _coordinates = [0, 0]
 
     def get_id(self):
-        return self.id
+        return self._template.gid
 
     def coordinates(self, coordinates: tuple):
-        self.coordinates = coordinates
+        self._coordinates = coordinates
+
+    def get_coordinates(self):
+        return self._coordinates
+
+    def get_dimensions(self):
+        return self._template.get_dimensions()
+
+    def get_offset(self):
+        return self._template.get_offset()
+
+    def get_regular_tile_dimensions(self):
+        return self._template.get_regular_tile_dimensions()
 
     def set_template(self, template):
         self._template = template
@@ -26,5 +38,5 @@ class Tile(object):
         # _loader_.tile.Tile, only tileset, if you wish
         # it will be simpler, just blit the image and that`s all
         # no we can`t remove _template, but it`s a good idea to slice image right in tileset
-        self.image = template.get_image(self.id)
-        self.rect = template.get_rect(self.id)
+        self.image = template.get_image()
+        self.rect = template.get_rect()

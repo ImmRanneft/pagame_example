@@ -16,7 +16,7 @@ class Camera(object):
 
     moving_x = moving_y = 0
     __left = __right = __top = __bottom = 0
-    __tile_width = __tile_height = 0
+    __tile_width,__tile_height = 64, 32
     __map_width = __map_height = 0
     _virtual_map_width = _virtual_map_height = 0
 
@@ -98,14 +98,18 @@ class Camera(object):
             elif self.coordinates[0] + self.__width_in_tiles + self.m_speed() > self.__edges['right']:
                 self.coordinates[0] = self.__edges['right'] - self.__width_in_tiles
 
-            self.coordinates[1] += self.moving_y * self.m_speed()
+            self.coordinates[1] += self.moving_y * self.m_speed() * (self.__tile_width / self.__tile_height)
             if self.coordinates[1] - self.m_speed() < self.__edges['top']:
                 self.coordinates[1] = 0
             elif self.coordinates[1] + self.__height_in_tiles + self.m_speed() > self.__edges['bottom']:
                 self.coordinates[1] = self.__edges['bottom'] - self.__height_in_tiles
 
         self.__current_x = self.coordinates[0] * self.__tile_width
+        if self.__current_x < self.__tile_width / 2:
+            self.__current_x = self.__tile_width / 2
         self.__current_y = self.coordinates[1] * self.__tile_height / 2
+        if self.__current_y < self.__tile_height / 2:
+            self.__current_y = self.__tile_height / 2
 
     def get_bounds(self):
         left = math.floor(self.__current_x / self.__tile_width - 1)
@@ -118,7 +122,8 @@ class Camera(object):
         bottom = math.ceil((self.__current_y + self.__height) / (self.__tile_height / 2) + 1)
         bottom = bottom if bottom < self.__map_height else self._virtual_map_height
         bottom = bottom if not self.return_bottom_edge_only_map else self._virtual_map_height
-        return dict(zip(self.__edges.keys(), [left, right, top, bottom]))
+        ret = dict(zip(self.__edges.keys(), [left, right, top, bottom]))
+        return ret
 
     def get_edges(self):
         return self.__edges
@@ -157,6 +162,7 @@ class Camera(object):
                         self.keyboard_moving_x = False
 
         keyboard_moving = self.keyboard_moving_x or self.keyboard_moving_y
+
         mouse_moving_x, mouse_moving_y = False, False
         if manager.state == GAME_STATE_RUNNING and not keyboard_moving:
             vp = self.get_dimensions()

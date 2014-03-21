@@ -2,6 +2,7 @@ __author__ = 'Den'
 
 import pygame
 import pygame.rect
+from pygame.locals import *
 from slg.map.loader.tmx.tile import Tile
 
 
@@ -30,7 +31,8 @@ class Tileset(object):
         self.__id = identificator
 
     def set_image(self, image, image_width, image_height):
-        self.__image = pygame.image.load(image).convert_alpha()
+        self.__image = pygame.image.load(image)
+        self.__image.convert_alpha()
         self.__image_width = image_width
         self.__image_height = image_height
 
@@ -48,12 +50,12 @@ class Tileset(object):
 
     def get_image(self, gid=-1):
         if gid > -1:
-            return self.__tile_storage[id].image
+            return self.__tile_storage[gid].image
         return self.__image
 
     def get_rect(self, gid=-1):
         if gid > -1:
-            return self.__tile_storage[id].rect
+            return self.__tile_storage[gid].rect
         return self.__image.get_rect()
 
     def initiate(self):
@@ -61,18 +63,15 @@ class Tileset(object):
         self.__tiles_in_col = tiles_in_col = int(self.__image_height / self.__tile_height)
         self.__last_gid = self.__first_gid - 1 + int(tiles_in_row * tiles_in_col)
 
-        tile = Tile(0)
-        tile.set_tileset(self)
-        self.__tile_storage[0] = tile
+        dim = self.get_tile_dimensions()
 
         gid = self.__first_gid
         for tile_row in range(0, tiles_in_row):
             for tile_col in range(0, tiles_in_col):
                 tile = Tile(gid)
                 tile.set_tileset(self)
-                tile.image = pygame.Surface(self.get_tile_dimensions())
-                dim = self.get_tile_dimensions()
                 cell = self.get_image_cell(gid)
+                tile.image = pygame.Surface(dim, HWSURFACE | SRCALPHA)
                 tile.rect = pygame.rect.Rect((dim[0]*cell[0], dim[1]*cell[1]), tuple(dim))
                 tile.image.blit(self.__image, (0, 0), tile.rect)
                 self.__tile_storage[gid] = tile

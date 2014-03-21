@@ -17,10 +17,13 @@ class Tile(object):
         return self.__tileset.get_tile_dimensions()
 
     def get_offset(self):
-        return self.__tileset.get_offsets()
+        return self.__tileset.get_offset()
 
     def get_image(self):
-        return self.__tileset.get_image()
+        return self.__tileset.get_image(self.gid)
+
+    def get_rect(self):
+        return self.__tileset.get_rect(self.gid)
 
     def get_image_offset(self):
         return self.__tileset.get_image_offsets(self.gid)
