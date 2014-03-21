@@ -13,6 +13,7 @@ from slg.locals import *
 
 
 def main():
+
     # pygame.init()
     # display = pygame.display.set_mode((400, 300))
     # display.fill((0, 0, 0))

@@ -1,11 +1,6 @@
-Hello!
-This is my first python game.
-Use arrow keys or mouse to move camera,
-use space to pause the game,
-standart WASD for player move.
-Have a nice day!
 Привет!
 Это моя первая игра на python.
+Для того, чтобы показать список карт нажмите Alt+m
 Используйте стрелки или мышь, чтобы двигать камеру,
 используйте пробел, чтобы поставить игру на паузу,
 стандартные WASD чтобы двигать игрока.

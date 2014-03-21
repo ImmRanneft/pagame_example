@@ -9,6 +9,7 @@ from pygame.locals import *
 from slg.map.loader.tmx import Tmx
 from slg.map.layer import Layer
 from slg.map.objectgroup import ObjectGroup
+from slg.event.maploaded import MapLoaded
 
 
 class Map(object):
@@ -28,8 +29,8 @@ class Map(object):
 
     map_surface = None
 
-    def __init__(self):
-        pass
+    def __init__(self, manager):
+        self._manager = manager
 
     def load(self, map_name):
         self._map_name = map_name
@@ -77,7 +78,15 @@ class Map(object):
 
 class MapLoadingThread(threading.Thread):
 
-    def __init__(self, map_name, map_object):
+    def __init__(self, map_name, map_object, camera):
         self._map_name = map_name
         self._map_object = map_object
+        self._camera = camera
         super().__init__()
+
+    def run(self):
+        print('start loading map ' + self._map_name)
+        self._map_object.load(self._map_name)
+        self._camera.set_dimensions(self._map_object.get_tile_dimensions(), self._map_object.get_map_dimensions())
+        self._camera.update()
+        MapLoaded(self._map_object).post()

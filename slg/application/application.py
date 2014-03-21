@@ -11,6 +11,7 @@ from slg.event import *
 from slg.application.camera import Camera
 from slg.application.manager import Manager
 from slg.scene.abstractscene import AbstractScene
+from slg.scene.mainmenuscene import MainMenuScene
 
 
 class Application(object):
@@ -62,8 +63,7 @@ class Application(object):
         self._display = pygame.display.set_mode(display_tup, display_flags)
         self._camera = Camera(self._display.get_size())
         self._clock = Clock()
-
-
+        self.set_scene(self._manager.get_scene(MainMenuScene))
 
     def get_display(self):
         return self._display
@@ -92,16 +92,14 @@ class Application(object):
             events = pygame.event.get()
             for e in events:
                 if e.type == EVENT_LOAD_MAP:
-                    self.map = slg.map.map.Map()
-                    self.map.load(e.map_name)
+                    self.map = slg.map.map.Map(self._manager)
                     camera = self._manager.get_camera()
-                    camera.set_dimensions(self.map.get_tile_dimensions(), self.map.get_map_dimensions())
-                    camera.update()
-                    pass
+                    map_loading_thread = slg.map.map.MapLoadingThread(e.map_name, self.map, camera)
+                    map_loading_thread.start()
                 if e.type == QUIT:
                     self._run = False
                 if e.type == KEYDOWN:
-                    if (e.key == K_F4 and pygame.key.get_mods() and pygame.KMOD_ALT) or e.key == K_ESCAPE:
+                    if e.key == K_F4 and pygame.key.get_mods() and pygame.KMOD_ALT:
                         self._run = False
                     if e.key == K_s and pygame.key.get_mods() and pygame.KMOD_ALT:
                         print(self.get_state())

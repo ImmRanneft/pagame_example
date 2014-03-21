@@ -14,8 +14,6 @@ class Text(slg.ui.dialog.Dialog):
 
     def __init__(self, string_to_render, surface, *groups, **styles):
         name = 'text'
-        self.styles.update(styles)
-        styles = self.styles
         text = TextWidget(*groups, **styles)
         text.set_text(string_to_render)
         [w, h] = text.get_size()

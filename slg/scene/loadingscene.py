@@ -46,7 +46,7 @@ class LoadingScene(AbstractScene):
         elif y <= 0 <= x:
             image = pygame.transform.scale(image, (image_size[0], surface_size[1]))
             y = 0
-        styles = {'font': 'alger'}
+        styles = {'font': 'alger', 'font_size': 40, 'align': [TextWidget.CENTER, TextWidget.CENTER]}
         text = TextWidget(**styles)
         text.set_text("""Loading...
 Please wait""")
