@@ -90,3 +90,4 @@ class MapLoadingThread(threading.Thread):
         self._camera.set_dimensions(self._map_object.get_tile_dimensions(), self._map_object.get_map_dimensions())
         self._camera.update()
         MapLoaded(self._map_object).post()
+        print('finished loading map ' + self._map_name)

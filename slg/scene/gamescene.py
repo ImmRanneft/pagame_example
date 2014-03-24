@@ -11,6 +11,7 @@ import slg.ui.text
 import slg.ui.lifebar
 import slg.map.map
 import slg.renderer.staggered
+import slg.entities.player
 
 from slg.locals import *
 from slg.scene.helper.gamemenu import GameMenu
@@ -35,6 +36,9 @@ class GameScene(AbstractScene):
 
         self.group = GameSceneGroup(self)
         self.map_group = GameSceneGroup(self)
+        self.player_group = GameSceneGroup(self)
+        self.player = slg.entities.player.Player(self.player_group)
+        self.player.set_camera(self._manager.get_camera())
         display_surface = self._manager.get_display()
         self.bg = pygame.Surface(display_surface.get_size())
         styles = {'font_size': 14, 'font': 'calibrii', 'text_color': (255, 255, 255), 'border': (5, 5)}
@@ -52,6 +56,7 @@ class GameScene(AbstractScene):
 
     def handle_events(self, events):
         self.group.handle_events(events)
+        self.handle_player_events(events)
         # self.map_group.handle_events(events)
         camera = self._manager.get_camera()
         camera.update()
@@ -59,6 +64,32 @@ class GameScene(AbstractScene):
         for e in events:
             if e.type == KEYDOWN:
                 self.handle_keypress(e.key, pygame.key.get_mods())
+
+    def handle_player_events(self, events):
+        for e in events:
+            if self._manager.state != GAME_STATE_PAUSED:
+                if e.type == KEYDOWN:
+                    if e.key == K_s:
+                        self.player.set_moving_y(self._manager.get_camera().MOVEMENT_POSITIVE)
+                        self.moving_y_key = K_s
+                        print('moving down')
+                    if e.key == K_w:
+                        self.player.set_moving_y(self._manager.get_camera().MOVEMENT_NEGATIVE)
+                        self.moving_y_key = K_w
+                        print('moving up')
+                    if e.key == K_d:
+                        self.player.set_moving_x(self._manager.get_camera().MOVEMENT_POSITIVE)
+                        self.moving_x_key = K_d
+                        print('moving right')
+                    if e.key == K_a:
+                        self.player.set_moving_x(self._manager.get_camera().MOVEMENT_NEGATIVE)
+                        self.moving_x_key = K_a
+                        print('moving left')
+                if e.type == KEYUP:
+                    if (e.key == K_w or e.key == K_s) and e.key == self.moving_y_key:
+                        self.player.set_moving_y(self._manager.get_camera().MOVEMENT_STOP)
+                    if (e.key == K_a or e.key == K_d) and e.key == self.moving_x_key:
+                        self.player.set_moving_x(self._manager.get_camera().MOVEMENT_STOP)
 
     def handle_keypress(self, key, modificated):
         if key == K_SPACE and self._manager.state < GAME_STATE_LOADING:
@@ -72,9 +103,11 @@ class GameScene(AbstractScene):
         display_surface = self._manager.get_display()
         camera = self._manager.get_camera()
         self.map_group.update(camera)
+        self.player_group.update()
         self.map_group.draw(self.bg)
-        self.group.clear(display_surface, self.bg)
+        # self.group.clear(display_surface, self.bg)
         display_surface.fill((0, 0, 0))
+        self.bg.blit(self.player.image, self.player.rect)
         display_surface.blit(self.bg, (0, 0))
         self.group.update(display_surface)
         self.group.draw(display_surface)

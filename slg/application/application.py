@@ -109,4 +109,5 @@ class Application(object):
                 self._scene.update()
                 self._scene.draw()
                 pygame.display.update()
-            self._clock.tick(FPS)
+                pygame.display.set_caption("FPS: %.2f" % (self._clock.get_fps())
+                           + 'ticks: %.2f' % (self._clock.tick(FPS)))
