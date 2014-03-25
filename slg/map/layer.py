@@ -44,12 +44,11 @@ class Layer(pygame.sprite.Sprite):
     def set_dimensions(self, dimensions, tile_dimensions):
         self._dimensions = dimensions
         layer_width, layer_height = int(dimensions[0]), int(dimensions[1])
-        layer_image_dimensions = [int(dimensions[0]*tile_dimensions[0] + tile_dimensions[0]/2),
-                                  int((dimensions[1]+1)*tile_dimensions[1]/2)]
+        layer_image_dimensions = [int(dimensions[0]*tile_dimensions[0]),
+                                  int(dimensions[1]*tile_dimensions[1])]
 
         self.image = pygame.Surface(layer_image_dimensions, SRCALPHA | HWSURFACE)
         self.rect = self.image.get_rect()
-        self.source_rect = self.image.get_rect()
         self._container = [[None for x in range(0, layer_height)] for x in range(0, layer_width)]
 
     def get_order(self):
@@ -71,22 +70,13 @@ class Layer(pygame.sprite.Sprite):
         self.rect = pygame.rect.Rect([-x for x in camera.get_dest()], self.image.get_size())
 
     def draw(self, renderer):
-        for j in range(0, self._dimensions[1]):
-            for i in range(0, self._dimensions[0]):
-                try:
-                    tile = self._container[i][j]
-                    if tile and tile.get_id() > 0:
-                        tile_rect = renderer.map_to_screen(tile)
-                        self.image.blit(tile.image, tile_rect)
-                except IndexError:
-                    print(i, j)
-                    exit()
+        renderer.draw_map(self._dimensions, self._container, self.image)
 
-    def append(self, tile, tilex, tiley):
+    def append(self, tile, tile_x, tile_y):
         try:
-            self._container[tilex][tiley] = tile
+            self._container[tile_x][tile_y] = tile
         except IndexError:
-            print('append_error:', tilex, tiley)
+            print('append_error:', tile_x, tile_y)
 
     def get(self, coordinates = None):
         if coordinates is not None:

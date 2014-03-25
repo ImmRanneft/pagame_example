@@ -22,6 +22,7 @@ class Player(pygame.sprite.Sprite):
     x, y = 2, 2
     movement_speed = 0.1  # 0.05
     moving_x = moving_y = 0
+    _map_object = None
     directions = {
         'west': 0,
         'northwest': 1,
@@ -41,6 +42,9 @@ class Player(pygame.sprite.Sprite):
         self.image.blit(image, (0, 0), (0, 0, 128, 128))
         self.rect = pygame.rect.Rect((0, 0), self.image.get_size())
 
+    def set_map(self, map_object):
+        self._map_object = map_object
+
     def set_camera(self, camera):
         self._camera = camera
 
@@ -50,7 +54,7 @@ class Player(pygame.sprite.Sprite):
 
     def render(self):
         camera_x, camera_y = self._camera.get_dest()
-        renderer = slg.renderer.staggered.Staggered()
+        renderer = self._map_object.get_renderer()
         newrect = renderer.map_to_screen(self)
         newrect.x -= camera_x
         newrect.y -= camera_y

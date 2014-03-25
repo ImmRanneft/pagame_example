@@ -22,3 +22,15 @@ class Staggered(object):
         newrect = pygame.rect.Rect((tile_x, tile_y), (drawable.rect.width, drawable.rect.height))
 
         return newrect
+
+    def draw_map(self, dimensions, container, image):
+        for j in range(0, dimensions[1]):
+            for i in range(0, dimensions[0]):
+                try:
+                    tile = container[i][j]
+                    if tile and tile.get_id() > 0:
+                        tile_rect = self.map_to_screen(tile)
+                        image.blit(tile.image, tile_rect)
+                except IndexError:
+                    print(i, j)
+                    exit()

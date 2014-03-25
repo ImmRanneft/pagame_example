@@ -6,6 +6,10 @@ from collections import OrderedDict
 import pygame
 from pygame.locals import *
 
+import slg.renderer.staggered
+import slg.renderer.isometric
+import slg.renderer.orthogonal
+
 from slg.map.loader.tmx import Tmx
 from slg.map.layer import Layer
 from slg.map.objectgroup import ObjectGroup
@@ -51,6 +55,21 @@ class Map(object):
         if self._map_name != '':
             self._loader = Tmx()
         return self._loader
+
+    def switch_renderer(self, renderer):
+        if renderer == 'staggered':
+            self.set_renderer(slg.renderer.staggered.Staggered())
+        elif renderer == 'isometric':
+            self.set_renderer(slg.renderer.isometric.Isometric())
+        elif renderer == 'orthogonal':
+            self.set_renderer(slg.renderer.orthogonal.Orthogonal())
+        return self.get_renderer()
+
+    def set_renderer(self, renderer):
+        self._renderer = renderer
+
+    def get_renderer(self):
+        return self._renderer
 
     def add_layer(self, layer: Layer):
         self._layers[layer.get_name()] = layer

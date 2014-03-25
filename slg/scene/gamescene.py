@@ -36,20 +36,25 @@ class GameScene(AbstractScene):
 
         self.group = GameSceneGroup(self)
         self.map_group = GameSceneGroup(self)
+
         self.player_group = GameSceneGroup(self)
         self.player = slg.entities.player.Player(self.player_group)
         self.player.set_camera(self._manager.get_camera())
+
         display_surface = self._manager.get_display()
+
         self.bg = pygame.Surface(display_surface.get_size())
+
         styles = {'font_size': 14, 'font': 'calibrii', 'text_color': (255, 255, 255), 'border': (5, 5)}
         slg.ui.lifebar.Lifebar(display_surface, self.group, **styles)
 
     def set_map(self, map_object):
         self._map_object = map_object
+        self.player.set_map(map_object)
         for layer in self._map_object.get_layers():
             layer.add(self.map_group)
             layer.update(self._manager.get_camera())
-            layer.draw(slg.renderer.staggered.Staggered())
+            layer.draw(map_object.get_renderer())
 
     def get_group(self):
         return self.group
@@ -104,11 +109,15 @@ class GameScene(AbstractScene):
         camera = self._manager.get_camera()
         self.map_group.update(camera)
         self.player_group.update()
+
+        display_surface.fill((0, 0, 0, 0))
+        self.bg.fill((0, 0, 0, 0))
+
         self.map_group.draw(self.bg)
-        # self.group.clear(display_surface, self.bg)
-        display_surface.fill((0, 0, 0))
-        self.bg.blit(self.player.image, self.player.rect)
+        self.player_group.draw(self.bg)
+
         display_surface.blit(self.bg, (0, 0))
+
         self.group.update(display_surface)
         self.group.draw(display_surface)
 

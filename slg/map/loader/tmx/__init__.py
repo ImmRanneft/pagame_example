@@ -38,6 +38,7 @@ class Tmx(object):
     def __load_map(self):
         raw_map = self.__map.getElementsByTagName('map')[0]
         self.__orientation = raw_map.attributes['orientation'].value
+        self._map_object.switch_renderer(self.__orientation)
         tile_width = int(raw_map.attributes['tilewidth'].value)
         tile_height = int(raw_map.attributes['tileheight'].value)
         map_width = int(raw_map.attributes['width'].value)

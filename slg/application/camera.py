@@ -122,7 +122,7 @@ class Camera(object):
         bottom = math.ceil((self.__current_y + self.__height) / (self.__tile_height / 2) + 1)
         bottom = bottom if bottom < self.__map_height else self._virtual_map_height
         bottom = bottom if not self.return_bottom_edge_only_map else self._virtual_map_height
-        ret = dict(zip(self.__edges.keys(), [left, right, top, bottom]))
+        ret = {'left': left, 'right': right, 'top': top, 'bottom': bottom}
         return ret
 
     def get_edges(self):
