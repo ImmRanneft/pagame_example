@@ -14,33 +14,36 @@ class Camera(object):
     __width = __height = 0
     __width_in_tiles = __height_in_tiles = 0
 
-    moving_x = moving_y = 0
+    _renderer = None
+
     __left = __right = __top = __bottom = 0
-    __tile_width,__tile_height = 64, 32
+
+    __tile_width, __tile_height = 64, 32
+
     __map_width = __map_height = 0
     _virtual_map_width = _virtual_map_height = 0
 
     return_right_edge_only_map = False
     return_bottom_edge_only_map = False
-
-    (DEFAULT_MOVEMENT_SPEED, ) = (0.2, )
-    movement_speed = 0.2
-    mouse_moving = False
-
-    keyboard_moving_x, keyboard_moving_y = False, False
-
     __edges = {'left': 0, 'right': 0, 'top': 0, 'bottom': 0}
 
+    (DEFAULT_MOVEMENT_SPEED, ) = (0.2, )
+    moving_x = moving_y = 0
+    movement_speed = 0.2
+    mouse_moving = False
+    keyboard_moving_x, keyboard_moving_y = False, False
     (MOVEMENT_POSITIVE, MOVEMENT_NEGATIVE, MOVEMENT_STOP) = (1, -1, 0)
 
     def __init__(self, display):
         self.__width = display[0]
         self.__height = display[1]
 
+    def set_renderer(self, renderer):
+        self._renderer = renderer
+
     def set_dimensions(self, tile_dimensions, map_dimensions):
 
-        self.__tile_width = tile_dimensions[0]
-        self.__tile_height = tile_dimensions[1]
+        [self.__tile_width, self.__tile_height] = self._renderer.calculate_tile_dimensions(tile_dimensions)
         self.__map_width = map_dimensions[0]
         self.__map_height = map_dimensions[1]
 
@@ -49,14 +52,15 @@ class Camera(object):
             self.return_right_edge_only_map = True
         else:
             self._virtual_map_width = self.__map_width
-        if self.__map_height < self.__height / (self.__tile_height / 2):
-            self._virtual_map_height = int(self.__height / (self.__tile_height / 2)) + 1
+
+        if self.__map_height < self.__height / self.__tile_height:
+            self._virtual_map_height = int(self.__height / self.__tile_height) + 1
             self.return_bottom_edge_only_map = True
         else:
             self._virtual_map_height = self.__map_height
 
         self.__width_in_tiles = self.__width / self.__tile_width
-        self.__height_in_tiles = self.__height / (self.__tile_height / 2)  # it`s isometric world, babe!
+        self.__height_in_tiles = self.__height / self.__tile_height  # it`s isometric world, babe!
 
         self.movement_speed = ((self.__tile_width+self.__tile_height)/(FPS/TPS*2))
 
@@ -107,7 +111,7 @@ class Camera(object):
         self.__current_x = self.coordinates[0] * self.__tile_width
         if self.__current_x < self.__tile_width / 2:
             self.__current_x = self.__tile_width / 2
-        self.__current_y = self.coordinates[1] * self.__tile_height / 2
+        self.__current_y = self.coordinates[1] * self.__tile_height
         if self.__current_y < self.__tile_height / 2:
             self.__current_y = self.__tile_height / 2
 
@@ -119,7 +123,7 @@ class Camera(object):
         right = right if not self.return_right_edge_only_map else self._virtual_map_width
         top = math.floor(self.__current_y / self.__tile_height - 1)
         top = top if 0 < top else 0
-        bottom = math.ceil((self.__current_y + self.__height) / (self.__tile_height / 2) + 1)
+        bottom = math.ceil((self.__current_y + self.__height) / self.__tile_height + 1)
         bottom = bottom if bottom < self.__map_height else self._virtual_map_height
         bottom = bottom if not self.return_bottom_edge_only_map else self._virtual_map_height
         ret = {'left': left, 'right': right, 'top': top, 'bottom': bottom}

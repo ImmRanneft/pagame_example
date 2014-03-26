@@ -34,6 +34,11 @@ class Player(pygame.sprite.Sprite):
         'southwest': 7,
     }
 
+
+    @staticmethod
+    def get_id():
+        return 999999
+
     def __init__(self, *groups):
         super().__init__(*groups)
         image = pygame.image.load(os.path.join(DATA_DIR, 'monsters', 'zombie.png'))
@@ -54,10 +59,15 @@ class Player(pygame.sprite.Sprite):
 
     def render(self):
         camera_x, camera_y = self._camera.get_dest()
+        camera_dim = self._camera.get_dimensions()
         renderer = self._map_object.get_renderer()
+        map_dimensions = renderer.get_layer_surface_dimensions(self._map_object.get_map_dimensions(),
+                                              self._map_object.get_tile_dimensions())
         newrect = renderer.map_to_screen(self)
         newrect.x -= camera_x
+        newrect.x += map_dimensions[0] / 2
         newrect.y -= camera_y
+        # print(newrect, self.x, self.y)
         self.rect = newrect
 
     def update(self):

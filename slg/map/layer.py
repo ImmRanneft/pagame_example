@@ -41,14 +41,18 @@ class Layer(pygame.sprite.Sprite):
 
     name = property(get_name, set_name)
 
+    def set_renderer(self, renderer):
+        self._renderer = renderer
+
     def set_dimensions(self, dimensions, tile_dimensions):
         self._dimensions = dimensions
-        layer_width, layer_height = int(dimensions[0]), int(dimensions[1])
-        layer_image_dimensions = [int(dimensions[0]*tile_dimensions[0]),
-                                  int(dimensions[1]*tile_dimensions[1])]
 
-        self.image = pygame.Surface(layer_image_dimensions, SRCALPHA | HWSURFACE)
+        layer_width, layer_height = int(dimensions[0]), int(dimensions[1])
+        layer_surface_dimensions = self._renderer.get_layer_surface_dimensions(dimensions, tile_dimensions)
+
+        self.image = pygame.Surface(layer_surface_dimensions, SRCALPHA | HWSURFACE)
         self.rect = self.image.get_rect()
+
         self._container = [[None for x in range(0, layer_height)] for x in range(0, layer_width)]
 
     def get_order(self):

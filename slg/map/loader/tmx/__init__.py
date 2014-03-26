@@ -87,6 +87,7 @@ class Tmx(object):
             self._map_object.add_layer(layer)
             layer_width = int(raw_layer.attributes['width'].value)
             layer_height = int(raw_layer.attributes['height'].value)
+            layer.set_renderer(self._map_object.get_renderer())
             layer.set_dimensions([layer_width, layer_height], self.__tile_dimensions)
             self.__load_tiles(layer, raw_layer)
             i += 1

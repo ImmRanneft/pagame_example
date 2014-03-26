@@ -33,4 +33,4 @@ class Selector(Text):
             ChangeState(GAME_STATE_PAUSED).post()
         elif self.rect.collidepoint(*kwargs['mouse_pos']):
             ChangeState(GAME_STATE_LOADING).post()
-            LoadMap('test5.tmx').post()
+            LoadMap('iso1.tmx').post()

@@ -43,7 +43,6 @@ class Map(object):
     def set_dimensions(self, map_dimensions, tile_dimensions):
         self._map_dimensions = map_dimensions
         self._tile_dimensions = tile_dimensions
-        self.map_surface = pygame.Surface(map_dimensions, SRCALPHA | HWSURFACE)
 
     def get_tile_dimensions(self):
         return self._tile_dimensions
@@ -63,6 +62,9 @@ class Map(object):
             self.set_renderer(slg.renderer.isometric.Isometric())
         elif renderer == 'orthogonal':
             self.set_renderer(slg.renderer.orthogonal.Orthogonal())
+
+        self._manager.get_camera().set_renderer(self.get_renderer())
+
         return self.get_renderer()
 
     def set_renderer(self, renderer):
