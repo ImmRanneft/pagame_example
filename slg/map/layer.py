@@ -24,7 +24,8 @@ class Layer(pygame.sprite.Sprite):
     _visible_area = {'left': 0, 'right': 0, 'top': 0, 'bottom': 0}
 
     _container = [[]]
-    _dimensions = pygame.rect.Rect
+    _dimensions = []
+    _tile_dimensions = []
     image = None
     rect = None
 
@@ -46,6 +47,7 @@ class Layer(pygame.sprite.Sprite):
 
     def set_dimensions(self, dimensions, tile_dimensions):
         self._dimensions = dimensions
+        self._tile_dimensions = tile_dimensions
 
         layer_width, layer_height = int(dimensions[0]), int(dimensions[1])
         layer_surface_dimensions = self._renderer.get_layer_surface_dimensions(dimensions, tile_dimensions)
@@ -54,6 +56,9 @@ class Layer(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
 
         self._container = [[None for x in range(0, layer_height)] for x in range(0, layer_width)]
+
+    def get_dimensions(self):
+        return self._dimensions
 
     def get_order(self):
         return self._order
@@ -73,8 +78,8 @@ class Layer(pygame.sprite.Sprite):
     def _render(self, camera):
         self.rect = pygame.rect.Rect([-x for x in camera.get_dest()], self.image.get_size())
 
-    def draw(self, renderer):
-        renderer.draw_map(self._dimensions, self._container, self.image)
+    def draw(self, surface, camera):
+        self._renderer.draw_map(self, surface, camera)
 
     def append(self, tile, tile_x, tile_y):
         try:

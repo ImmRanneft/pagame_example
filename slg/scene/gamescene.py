@@ -54,7 +54,7 @@ class GameScene(AbstractScene):
         for layer in self._map_object.get_layers():
             layer.add(self.map_group)
             layer.update(self._manager.get_camera())
-            layer.draw(map_object.get_renderer())
+            layer.draw(self._manager.get_display(), self._manager.get_camera())
 
     def get_group(self):
         return self.group
@@ -113,10 +113,12 @@ class GameScene(AbstractScene):
         display_surface.fill((0, 0, 0, 0))
         self.bg.fill((0, 0, 0, 0))
 
-        self.map_group.draw(self.bg)
-        self.player_group.draw(self.bg)
+        for layer in self._map_object.get_layers():
+            layer.draw(self._manager.get_display(), self._manager.get_camera())
 
-        display_surface.blit(self.bg, (0, 0))
+        # self.player_group.draw(self.bg)
+
+        # display_surface.blit(self.bg, (0, 0))
 
         self.group.update(display_surface)
         self.group.draw(display_surface)

@@ -38,15 +38,18 @@ class Isometric(object):
     def calculate_tile_dimensions(tile_dimensions):
         return [tile_dimensions[0], tile_dimensions[1]]
 
-    def draw_map(self, dimensions, container, image):
-        img_size = image.get_size()
-        for j in range(0, dimensions[1]):
-            for i in range(0, dimensions[0]):
+    def draw_map(self, layer, image, camera):
+        dest = camera.get_dest()
+        img_size = self.get_layer_surface_dimensions(layer._dimensions, layer._tile_dimensions)
+        for j in range(0, layer.get_dimensions()[1]):
+            for i in range(0, layer.get_dimensions()[0]):
                 try:
-                    tile = container[i][j]
+                    tile = layer.get([i, j])
                     if tile and tile.get_id() > 0:
                         tile_rect = self.map_to_screen(tile)
                         tile_rect.x += img_size[0]/2
+                        tile_rect.x -= dest[0]
+                        tile_rect.y += - dest[1]
                         image.blit(tile.image, tile_rect)
                 except IndexError:
                     print(i, j)
