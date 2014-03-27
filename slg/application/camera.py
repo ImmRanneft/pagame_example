@@ -63,10 +63,29 @@ class Camera(object):
         return self.__width, self.__height
 
     def update(self):
-        pass
+        if self.moving_x or self.moving_y:
+
+            self.coordinates[0] += self.moving_x * self.m_speed()
+            if self.coordinates[0] - self.m_speed() < self.__edges['left']:
+                self.coordinates[0] = 0
+            elif self.coordinates[0] + self.__width_in_tiles + self.m_speed() > self.__edges['right']:
+                self.coordinates[0] = self.__edges['right'] - self.__width_in_tiles
+
+            self.coordinates[1] += self.moving_y * self.m_speed() * (self.__tile_width / self.__tile_height)
+            if self.coordinates[1] - self.m_speed() < self.__edges['top']:
+                self.coordinates[1] = 0
+            elif self.coordinates[1] + self.__height_in_tiles + self.m_speed() > self.__edges['bottom']:
+                self.coordinates[1] = self.__edges['bottom'] - self.__height_in_tiles
+
+        self.__current_x = self.coordinates[0] * self.__tile_width
+        if self.__current_x < self.__tile_width / 2:
+            self.__current_x = self.__tile_width / 2
+        self.__current_y = self.coordinates[1] * self.__tile_height
+        if self.__current_y < self.__tile_height / 2:
+            self.__current_y = self.__tile_height / 2
 
     def get_bounds(self):
-        ret = {'left':0, 'right': '50', 'top': 0, 'bottom': 0}
+        ret = {'left': 0, 'right': 50, 'top': 0, 'bottom': 50}
         return ret
 
     def set_movement_speed(self, movement_speed=DEFAULT_MOVEMENT_SPEED):

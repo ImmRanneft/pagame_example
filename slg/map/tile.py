@@ -2,9 +2,10 @@ __author__ = 'den'
 
 
 import pygame.rect
+import pygame.sprite
 
 
-class Tile(object):
+class Tile(pygame.sprite.Sprite):
 
     image = None
     rect = None
