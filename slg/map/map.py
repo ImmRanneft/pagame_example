@@ -16,7 +16,7 @@ from slg.map.objectgroup import ObjectGroup
 from slg.event.maploaded import MapLoaded
 
 
-class Map(object):
+class Map(pygame.sprite.LayeredUpdates):
     """
     Map object, holds layers and objects
     """
@@ -26,6 +26,7 @@ class Map(object):
     _object_groups = OrderedDict()
 
     _loader = None
+    _renderer = None
 
     _map_name = ''
     _tile_dimensions = [0, 0]
@@ -34,6 +35,7 @@ class Map(object):
     map_surface = None
 
     def __init__(self, manager):
+        super().__init__()
         self._manager = manager
 
     def load(self, map_name):
@@ -75,6 +77,7 @@ class Map(object):
 
     def add_layer(self, layer: Layer):
         self._layers[layer.get_name()] = layer
+        layer.set_map(self)
 
     def get_layers(self):
         return self._layers.values()
@@ -85,16 +88,9 @@ class Map(object):
     def get_name(self):
         return self._map_name
 
-    def render(self, renderer):
+    def update(self):
         for layer in self.get_layers():
-            layer.draw(renderer)
-            self.map_surface.blit(layer.image, layer.rect)
-
-    def draw(self, surface, camera):
-        for layer in self.get_layers():
-            layer.update(camera)
-            self.map_surface.blit(layer.image, layer.rect)
-        surface.blit(self.map_surface, (0, 0))
+            layer.update()
 
 
 class MapLoadingThread(threading.Thread):

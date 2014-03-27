@@ -92,9 +92,10 @@ class Application(object):
             events = pygame.event.get()
             for e in events:
                 if e.type == EVENT_LOAD_MAP:
-                    self.map = slg.map.map.Map(self._manager)
                     camera = self._manager.get_camera()
-                    map_loading_thread = slg.map.map.MapLoadingThread(e.map_name, self.map, camera)
+                    map_loading_thread = slg.map.map.MapLoadingThread(e.map_name,
+                                                                      slg.map.map.Map(self._manager),
+                                                                      camera)
                     map_loading_thread.start()
                 if e.type == QUIT:
                     self._run = False
@@ -106,7 +107,6 @@ class Application(object):
             self._manager.handle(events)
             if self._scene:
                 self._scene.handle_events(events)
-                self._scene.update()
                 self._scene.draw()
                 pygame.display.update()
                 pygame.display.set_caption("FPS: %.2f" % (self._clock.get_fps())

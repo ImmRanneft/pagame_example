@@ -1,15 +1,13 @@
 __author__ = 'den'
 
 import pygame.rect
+from slg.renderer.abstractrenderer import AbstractRenderer
 
 
-class Staggered(object):
-
-    def __init__(self):
-        pass
+class Staggered(AbstractRenderer):
 
     @staticmethod
-    def get_layer_surface_dimensions(dimensions, tile_dimensions):
+    def calculate_surface_dimensions(dimensions, tile_dimensions):
         return [int(dimensions[0]*tile_dimensions[0]),
                 int(dimensions[1]*tile_dimensions[1]) / 2]
 

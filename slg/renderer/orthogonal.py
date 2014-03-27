@@ -1,12 +1,10 @@
 __author__ = 'den'
 
 import pygame.rect
+from slg.renderer.abstractrenderer import AbstractRenderer
 
 
-class Orthogonal(object):
-
-    def __init__(self):
-        pass
+class Orthogonal(AbstractRenderer):
 
     @staticmethod
     def map_to_screen(drawable):
@@ -19,15 +17,6 @@ class Orthogonal(object):
         newrect = pygame.rect.Rect((tile_x, tile_y), (drawable.rect.width, drawable.rect.height))
 
         return newrect
-
-    @staticmethod
-    def get_layer_surface_dimensions(dimensions, tile_dimensions):
-        return [int(dimensions[0]*tile_dimensions[0]),
-                int(dimensions[1]*tile_dimensions[1])]
-
-    @staticmethod
-    def calculate_tile_dimensions(tile_dimensions):
-        return [tile_dimensions[0], tile_dimensions[1]]
 
     def draw_map(self, dimensions, container, image):
         for i in range(0, dimensions[0]):

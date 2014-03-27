@@ -17,7 +17,4 @@ class AbstractScene(object):
     def draw(self):
         raise NotImplemented
 
-    def update(self):
-        raise NotImplemented
-
     manager = property(lambda self: self._manager, lambda self, v: None, lambda self: None)

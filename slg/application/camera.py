@@ -16,15 +16,11 @@ class Camera(object):
 
     _renderer = None
 
-    __left = __right = __top = __bottom = 0
-
     __tile_width, __tile_height = 64, 32
 
     __map_width = __map_height = 0
     _virtual_map_width = _virtual_map_height = 0
 
-    return_right_edge_only_map = False
-    return_bottom_edge_only_map = False
     __edges = {'left': 0, 'right': 0, 'top': 0, 'bottom': 0}
 
     (DEFAULT_MOVEMENT_SPEED, ) = (0.2, )
@@ -35,39 +31,15 @@ class Camera(object):
     (MOVEMENT_POSITIVE, MOVEMENT_NEGATIVE, MOVEMENT_STOP) = (1, -1, 0)
 
     def __init__(self, display):
-        self.__width = display[0]
-        self.__height = display[1]
+        [self.__width, self.__height] = display
 
     def set_renderer(self, renderer):
         self._renderer = renderer
+        self._renderer.set_camera(self)
 
     def set_dimensions(self, tile_dimensions, map_dimensions):
-
         [self.__tile_width, self.__tile_height] = self._renderer.calculate_tile_dimensions(tile_dimensions)
-        self.__map_width = map_dimensions[0]
-        self.__map_height = map_dimensions[1]
-
-        if self.__map_width < self.__width / self.__tile_width:
-            self._virtual_map_width = int(self.__width / self.__tile_width) + 1
-            self.return_right_edge_only_map = True
-        else:
-            self._virtual_map_width = self.__map_width
-
-        if self.__map_height < self.__height / self.__tile_height:
-            self._virtual_map_height = int(self.__height / self.__tile_height) + 1
-            self.return_bottom_edge_only_map = True
-        else:
-            self._virtual_map_height = self.__map_height
-
-        self.__width_in_tiles = self.__width / self.__tile_width
-        self.__height_in_tiles = self.__height / self.__tile_height  # it`s isometric world, babe!
-
-        self.movement_speed = ((self.__tile_width+self.__tile_height)/(FPS/TPS*2))
-
-        self.__edges['left'] = 0
-        self.__edges['top'] = 0
-        self.__edges['right'] = self._virtual_map_width
-        self.__edges['bottom'] = self._virtual_map_height
+        [self.__map_width, self.__map_height] = map_dimensions
 
     def m_speed(self):
         if self.mouse_moving:
@@ -84,9 +56,6 @@ class Camera(object):
     def set_moving_y(self, movement):
         self.moving_y = movement
 
-    def reset_camera_to(self, coordinates):
-        self.coordinates = list(coordinates)
-
     def get_dest(self):
         return self.__current_x, self.__current_y
 
@@ -94,52 +63,14 @@ class Camera(object):
         return self.__width, self.__height
 
     def update(self):
-        if self.moving_x or self.moving_y:
-
-            self.coordinates[0] += self.moving_x * self.m_speed()
-            if self.coordinates[0] - self.m_speed() < self.__edges['left']:
-                self.coordinates[0] = 0
-            elif self.coordinates[0] + self.__width_in_tiles + self.m_speed() > self.__edges['right']:
-                self.coordinates[0] = self.__edges['right'] - self.__width_in_tiles
-
-            self.coordinates[1] += self.moving_y * self.m_speed() * (self.__tile_width / self.__tile_height)
-            if self.coordinates[1] - self.m_speed() < self.__edges['top']:
-                self.coordinates[1] = 0
-            elif self.coordinates[1] + self.__height_in_tiles + self.m_speed() > self.__edges['bottom']:
-                self.coordinates[1] = self.__edges['bottom'] - self.__height_in_tiles
-
-        self.__current_x = self.coordinates[0] * self.__tile_width
-        if self.__current_x < self.__tile_width / 2:
-            self.__current_x = self.__tile_width / 2
-        self.__current_y = self.coordinates[1] * self.__tile_height
-        if self.__current_y < self.__tile_height / 2:
-            self.__current_y = self.__tile_height / 2
+        pass
 
     def get_bounds(self):
-        left = math.floor(self.__current_x / self.__tile_width - 1)
-        left = left if 0 < left else 0
-        right = math.ceil((self.__current_x + self.__width) / self.__tile_width + 1)
-        right = right if right < self.__map_width else self._virtual_map_width
-        right = right if not self.return_right_edge_only_map else self._virtual_map_width
-        top = math.floor(self.__current_y / self.__tile_height - 1)
-        top = top if 0 < top else 0
-        bottom = math.ceil((self.__current_y + self.__height) / self.__tile_height + 1)
-        bottom = bottom if bottom < self.__map_height else self._virtual_map_height
-        bottom = bottom if not self.return_bottom_edge_only_map else self._virtual_map_height
-        ret = {'left': left, 'right': right, 'top': top, 'bottom': bottom}
+        ret = {'left':0, 'right': '50', 'top': 0, 'bottom': 0}
         return ret
-
-    def get_edges(self):
-        return self.__edges
-
-    def get_tile_dimensions(self):
-        return self.__tile_width, self.__tile_height
 
     def set_movement_speed(self, movement_speed=DEFAULT_MOVEMENT_SPEED):
         self.movement_speed = movement_speed
-
-    def width_in_tiles(self):
-        return self._virtual_map_width / self.__tile_width
 
     def handle_events(self, events, manager):
         for e in events:

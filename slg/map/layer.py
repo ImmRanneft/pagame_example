@@ -20,6 +20,7 @@ class Layer(pygame.sprite.Sprite):
 
     _order = 0
     _layer = 'bg'
+    dirty = 0
 
     _visible_area = {'left': 0, 'right': 0, 'top': 0, 'bottom': 0}
 
@@ -28,10 +29,11 @@ class Layer(pygame.sprite.Sprite):
     _tile_dimensions = []
     image = None
     rect = None
+    _map_object = None
+    _renderer = None
 
     def __init__(self, *groups):
         super().__init__(*groups)
-        self.dirty = 2
 
     # setters and getters
     def get_name(self):
@@ -50,8 +52,7 @@ class Layer(pygame.sprite.Sprite):
         self._tile_dimensions = tile_dimensions
 
         layer_width, layer_height = int(dimensions[0]), int(dimensions[1])
-        layer_surface_dimensions = self._renderer.get_layer_surface_dimensions(dimensions, tile_dimensions)
-
+        layer_surface_dimensions = self._renderer.calculate_surface_dimensions(dimensions, tile_dimensions)
         self.image = pygame.Surface(layer_surface_dimensions, SRCALPHA | HWSURFACE)
         self.rect = self.image.get_rect()
 
@@ -60,26 +61,28 @@ class Layer(pygame.sprite.Sprite):
     def get_dimensions(self):
         return self._dimensions
 
+    def set_map(self, map_object):
+        self._map_object = map_object
+
     def get_order(self):
         return self._order
 
     def set_order(self, order: int):
         self._order = order
 
-    def update(self, camera):
-        camera_bounds = camera.get_bounds()
+    def update(self):
+        camera_bounds = self._renderer.get_camera_bounds()
         for key in camera_bounds.keys():
             if self._visible_area[key] != camera_bounds[key]:
                 self._visible_area[key] = camera_bounds[key]
                 self.dirty = 1
         if self.dirty > 0:
-            self._render(camera)
+            self.dirty = 0
+            print('draw')
+            self._render()
 
-    def _render(self, camera):
-        self.rect = pygame.rect.Rect([-x for x in camera.get_dest()], self.image.get_size())
-
-    def draw(self, surface, camera):
-        self._renderer.draw_map(self, surface, camera)
+    def _render(self):
+        self._renderer.draw_map(self, self._map_object)
 
     def append(self, tile, tile_x, tile_y):
         try:

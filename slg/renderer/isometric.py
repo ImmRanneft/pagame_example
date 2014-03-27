@@ -1,20 +1,17 @@
 __author__ = 'den'
 
 import pygame.rect
+from slg.renderer.abstractrenderer import AbstractRenderer
 
 
-class Isometric(object):
+class Isometric(AbstractRenderer):
 
-    def __init__(self):
-        pass
-
-    @staticmethod
-    def map_to_screen(drawable):
+    def map_to_screen(self, drawable):
         [x, y] = drawable.get_coordinates()
         [current_width, current_height] = drawable.get_dimensions()
         [regular_width, regular_height] = drawable.get_regular_tile_dimensions()
-
         [offset_x, offset_y] = drawable.get_offset()
+        [camera_offset_x,  camera_offset_y] = [-x for x in self.camera.get_dest()]
 
         #this is additional offset for tiles that greater or lesser than regular tile
         dy = (current_height - 2 * offset_y - regular_height)
@@ -22,35 +19,23 @@ class Isometric(object):
 
         tile_x = (x - y) * regular_width / 2 - offset_x - dx
         tile_y = (x + y) * regular_height / 2 - offset_y - dy
-        if drawable.get_id() == 999999:
-            pass # print(x, y, tile_x, tile_y, [current_width, current_height], [regular_width, regular_height])
 
-        newrect = pygame.rect.Rect((tile_x, tile_y), (drawable.rect.width, drawable.rect.height))
+        tile_x -= camera_offset_x
+        tile_y -= camera_offset_y
 
-        return newrect
+        new_rectangle = pygame.rect.Rect((tile_x, tile_y), (drawable.rect.width, drawable.rect.height))
+        return new_rectangle
 
-    @staticmethod
-    def get_layer_surface_dimensions(dimensions, tile_dimensions):
-        return [int(dimensions[0]*tile_dimensions[0]),
-                int(dimensions[1]*tile_dimensions[1])]
-
-    @staticmethod
-    def calculate_tile_dimensions(tile_dimensions):
-        return [tile_dimensions[0], tile_dimensions[1]]
-
-    def draw_map(self, layer, image, camera):
-        dest = camera.get_dest()
-        img_size = self.get_layer_surface_dimensions(layer._dimensions, layer._tile_dimensions)
+    def draw_map(self, layer, map_object):
+        print(layer, map_object)
         for j in range(0, layer.get_dimensions()[1]):
             for i in range(0, layer.get_dimensions()[0]):
                 try:
                     tile = layer.get([i, j])
                     if tile and tile.get_id() > 0:
                         tile_rect = self.map_to_screen(tile)
-                        tile_rect.x += img_size[0]/2
-                        tile_rect.x -= dest[0]
-                        tile_rect.y += - dest[1]
-                        image.blit(tile.image, tile_rect)
+                        # tile_rect.x += img_size[0]/2
+                        # image.blit(tile.image, tile_rect)
                 except IndexError:
                     print(i, j)
                     exit()

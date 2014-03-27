@@ -73,8 +73,6 @@ Please wait""")
         self.group.update(display_surface)
         self.group.draw(display_surface)
 
-    def update(self):
-        pass
 
 
 

@@ -52,9 +52,6 @@ class MainMenuScene(AbstractScene):
         self.group.update(display_surface)
         self.group.draw(display_surface)
 
-    def update(self):
-        pass
-
 
 def showMainText(display_surface, group):
     string = codecs.open(os.path.join(TEXTS_DIR, 'welcome.txt'), 'r', encoding='UTF-8').read()
