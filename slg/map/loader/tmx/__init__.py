@@ -89,6 +89,7 @@ class Tmx(object):
             layer_height = int(raw_layer.attributes['height'].value)
             layer.set_renderer(self._map_object.get_renderer())
             layer.set_dimensions([layer_width, layer_height], self.__tile_dimensions)
+            layer.set_order(i)
             self.__load_tiles(layer, raw_layer)
             i += 1
 
@@ -107,6 +108,7 @@ class Tmx(object):
                 tile_template = tileset.get_tile_template(tile_gid)
                 [tile_width, tile_height] = tile_template.get_dimensions()
                 tile = Tile()
+                tile._layer = layer.get_order()
                 tile.set_template(tile_template)
                 tile.coordinates(coordinates)
                 layer.append(tile, x, y)

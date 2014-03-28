@@ -25,6 +25,14 @@ class Isometric(AbstractRenderer):
         new_rectangle = pygame.rect.Rect((tile_x, tile_y), (drawable.rect.width, drawable.rect.height))
         return new_rectangle
 
+    @staticmethod
+    def screen_to_map(coordinates, tile_dimensions):
+        twh = tile_dimensions[0]/2
+        thh = tile_dimensions[1]/2
+        x = (coordinates[0] / twh + coordinates[1] / thh) / 2
+        y = (coordinates[1] / thh - (coordinates[0] / twh)) / 2
+        return [x, y]
+
     def draw_map(self, layer, map_object):
         bounds = self.camera.get_bounds()
         for j in range(bounds['top'], bounds['bottom']):

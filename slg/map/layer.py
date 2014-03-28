@@ -76,10 +76,10 @@ class Layer(pygame.sprite.Sprite):
             if self._visible_area[key] != camera_bounds[key]:
                 self._visible_area[key] = camera_bounds[key]
                 self.dirty = 1
-        if self.dirty > 0:
+        # if self.dirty > 0:
             # self.dirty = 0
             # print('draw')
-            self._render()
+        self._render()
 
     def _render(self):
         self._renderer.draw_map(self, self._map_object)

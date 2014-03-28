@@ -100,7 +100,7 @@ class Camera(object):
 
         half_map_width = self.__map_width * self.__tile_width / 2
 
-        self.__current_x = self.coordinates[0] * self.__tile_width - half_map_width
+        self.__current_x = self.coordinates[0] * self.__tile_width - half_map_width + self.get_dimensions()[0]/2
         if self.__current_x < self.__tile_width / 2 - half_map_width:
             self.__current_x = self.__tile_width / 2 - half_map_width
         self.__current_y = self.coordinates[1] * self.__tile_height
@@ -108,21 +108,28 @@ class Camera(object):
             self.__current_y = 0
 
     def get_bounds(self):
-        left = int(self.coordinates[0] - self.coordinates[1])
+
+        half_map_width = self.__map_width * self.__tile_width / 2
+        x, y = self.__current_x + half_map_width, self.__current_y
+        td = [self.__tile_width, self.__tile_height]
+
+        topleft = (x, y)
+        top = int(self._renderer.screen_to_map(topleft, td)[0]) - 1
+        bottomleft = (x - half_map_width, y)
+        left = int(self._renderer.screen_to_map(bottomleft, td)[0]) - 1
         left = left if left > 0 else 0
-        
-        right = int(self.__width_in_tiles + self.coordinates[0] + self.coordinates[1] + 1)
+        topright = (x + self.__width/2, y)
+        right = int(self._renderer.screen_to_map(topright, td)[0]) + 1
         right = right if right < self.__map_width else self.__map_width
+        # exit()
+        print(left, right, x, y)
 
-        bottom = int(self.coordinates[1] - self.coordinates[0])
-
-        print(rect.left, rect.right, rect.top, rect.bottom)
-        exit()
-
-
-
+        top = 0
+        # left = 0
+        # right = 20
+        bottom = 40
         ret = {'left': left, 'right': right, 'top': top, 'bottom': bottom}
-        print(ret)
+        # print(ret)
         return ret
 
     def set_movement_speed(self, movement_speed=DEFAULT_MOVEMENT_SPEED):
