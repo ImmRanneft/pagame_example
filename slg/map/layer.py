@@ -78,7 +78,7 @@ class Layer(pygame.sprite.Sprite):
                 self.dirty = 1
         if self.dirty > 0:
             # self.dirty = 0
-            print('draw')
+            # print('draw')
             self._render()
 
     def _render(self):

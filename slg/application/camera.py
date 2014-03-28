@@ -3,6 +3,7 @@ __author__ = 'Den'
 import math
 
 import pygame.mouse
+import pygame.rect
 
 from slg.locals import *
 
@@ -41,6 +42,26 @@ class Camera(object):
         [self.__tile_width, self.__tile_height] = self._renderer.calculate_tile_dimensions(tile_dimensions)
         [self.__map_width, self.__map_height] = map_dimensions
 
+        if self.__map_width < self.__width / self.__tile_width:
+            self._virtual_map_width = int(self.__width / self.__tile_width) + 1
+        else:
+            self._virtual_map_width = self.__map_width
+
+        if self.__map_height < self.__height / self.__tile_height:
+            self._virtual_map_height = int(self.__height / self.__tile_height) + 1
+        else:
+            self._virtual_map_height = self.__map_height
+
+        self.__width_in_tiles = self.__width / self.__tile_width
+        self.__height_in_tiles = self.__height / self.__tile_height  # it`s isometric world, babe!
+
+        self.movement_speed = ((self.__tile_width+self.__tile_height)/(FPS/TPS*2))
+
+        self.__edges['left'] = 0
+        self.__edges['top'] = 0
+        self.__edges['right'] = self._virtual_map_width
+        self.__edges['bottom'] = self._virtual_map_height
+
     def m_speed(self):
         if self.mouse_moving:
             return self.movement_speed / 2
@@ -77,15 +98,31 @@ class Camera(object):
             elif self.coordinates[1] + self.__height_in_tiles + self.m_speed() > self.__edges['bottom']:
                 self.coordinates[1] = self.__edges['bottom'] - self.__height_in_tiles
 
-        self.__current_x = self.coordinates[0] * self.__tile_width
-        if self.__current_x < self.__tile_width / 2:
-            self.__current_x = self.__tile_width / 2
+        half_map_width = self.__map_width * self.__tile_width / 2
+
+        self.__current_x = self.coordinates[0] * self.__tile_width - half_map_width
+        if self.__current_x < self.__tile_width / 2 - half_map_width:
+            self.__current_x = self.__tile_width / 2 - half_map_width
         self.__current_y = self.coordinates[1] * self.__tile_height
-        if self.__current_y < self.__tile_height / 2:
-            self.__current_y = self.__tile_height / 2
+        if self.__current_y < 0:
+            self.__current_y = 0
 
     def get_bounds(self):
-        ret = {'left': 0, 'right': 50, 'top': 0, 'bottom': 50}
+        left = int(self.coordinates[0] - self.coordinates[1])
+        left = left if left > 0 else 0
+        
+        right = int(self.__width_in_tiles + self.coordinates[0] + self.coordinates[1] + 1)
+        right = right if right < self.__map_width else self.__map_width
+
+        bottom = int(self.coordinates[1] - self.coordinates[0])
+
+        print(rect.left, rect.right, rect.top, rect.bottom)
+        exit()
+
+
+
+        ret = {'left': left, 'right': right, 'top': top, 'bottom': bottom}
+        print(ret)
         return ret
 
     def set_movement_speed(self, movement_speed=DEFAULT_MOVEMENT_SPEED):

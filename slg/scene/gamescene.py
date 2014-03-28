@@ -42,8 +42,8 @@ class GameScene(AbstractScene):
         self.camera = self._manager.get_camera()
 
     def handle_events(self, events):
-        self._manager.get_camera().handle_events(events, self._manager)
         self._manager.get_camera().update()
+        self._manager.get_camera().handle_events(events, self._manager)
         for e in events:
             if e.type == KEYDOWN:
                 self.handle_keypress(e.key, pygame.key.get_mods())

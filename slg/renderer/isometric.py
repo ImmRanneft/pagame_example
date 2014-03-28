@@ -19,8 +19,8 @@ class Isometric(AbstractRenderer):
         tile_x = (x - y) * regular_width / 2 - offset_x - dx
         tile_y = (x + y) * regular_height / 2 - offset_y - dy
 
-        tile_x -= camera_offset_x - self.camera.get_dimensions()[0]/2
-        tile_y -= camera_offset_y
+        tile_x += camera_offset_x
+        tile_y += camera_offset_y
 
         new_rectangle = pygame.rect.Rect((tile_x, tile_y), (drawable.rect.width, drawable.rect.height))
         return new_rectangle
