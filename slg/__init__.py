@@ -82,8 +82,6 @@ class Application(object):
             scene_to_render.poll_events(events)
             scene_to_render.update()
 
-        pygame.display.update()
-
     def running(self, run=None):
         if run is not None:
             self._run = run
@@ -102,3 +100,5 @@ class Application(object):
             self.update()
             pygame.display.update()
             self.clock.tick(60)
+            pygame.display.set_caption("FPS: %.2f" % (self.clock.get_fps())
+                           + 'ticks: %.2f' % (self.clock.tick(60)))
