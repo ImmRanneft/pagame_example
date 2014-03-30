@@ -10,7 +10,7 @@ import pygame.rect
 
 from slg.application.application import Application
 from slg.locals import *
-
+import cProfile
 
 def main():
 
@@ -37,4 +37,5 @@ def main():
     app.run(True)
 
 if __name__ == "__main__":
+    # cProfile.run('main()', sort='time')
     main()

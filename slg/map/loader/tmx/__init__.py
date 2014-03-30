@@ -110,7 +110,8 @@ class Tmx(object):
                 tile = Tile()
                 tile._layer = layer.get_order()
                 tile.set_template(tile_template)
-                tile.coordinates(coordinates)
+                tile.coordinates(coordinates, layer.order)
+                tile.base_rect = self._map_object.get_renderer().map_to_screen(tile)
                 layer.append(tile, x, y)
             x += 1
             if x >= l_w:

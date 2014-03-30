@@ -11,7 +11,7 @@ class Isometric(AbstractRenderer):
         [current_width, current_height] = drawable.get_dimensions()
         [regular_width, regular_height] = drawable.get_regular_tile_dimensions()
         [offset_x, offset_y] = drawable.get_offset()
-        [camera_offset_x,  camera_offset_y] = [-x for x in self.camera.get_dest()]
+
         #this is additional offset for tiles that greater or lesser than regular tile
         dy = (current_height - 2 * offset_y - regular_height)
         dx = (current_width - 2 * offset_x) - regular_width
@@ -19,10 +19,16 @@ class Isometric(AbstractRenderer):
         tile_x = (x - y) * regular_width / 2 - offset_x - dx
         tile_y = (x + y) * regular_height / 2 - offset_y - dy
 
-        tile_x += camera_offset_x
-        tile_y += camera_offset_y
+        new_rectangle = pygame.rect.Rect((tile_x, tile_y), (drawable.base_rect.width, drawable.base_rect.height))
+        return new_rectangle
 
-        new_rectangle = pygame.rect.Rect((tile_x, tile_y), (drawable.rect.width, drawable.rect.height))
+    def adjust_with_cam(self, drawable):
+        [camera_offset_x,  camera_offset_y] = self.camera.get_dest()
+        x = drawable.base_rect.x
+        y = drawable.base_rect.y
+        x -= camera_offset_x
+        y -= camera_offset_y
+        new_rectangle = pygame.rect.Rect((x, y), (drawable.base_rect.width, drawable.base_rect.height))
         return new_rectangle
 
     @staticmethod
@@ -35,13 +41,69 @@ class Isometric(AbstractRenderer):
 
     def draw_map(self, layer, map_object):
         bounds = self.camera.get_bounds()
+        dim = self.camera.get_dimensions()
+        delta = layer._d_visible_area
+        old_bounds = {}
+        for key in bounds.keys():
+            old_bounds[key] = bounds[key]-delta[key]
+        layer._d_visible_area = {'left': 0, 'top': 0, 'right': 0, 'bottom': 0}
+
+        # l = []
         for j in range(bounds['top'], bounds['bottom']):
             for i in range(bounds['left'], bounds['right']):
                 try:
                     tile = layer.get([i, j])
                     if tile and tile.get_id() > 0:
-                        tile.rect = self.map_to_screen(tile)
-                        map_object.add(tile)
+                        tile.rect = self.adjust_with_cam(tile)
+                        if - tile.rect.width < tile.rect.x < dim[0] \
+                                and -tile.rect.height < tile.rect.y < dim[1] and tile.get_id() > 0:
+                            map_object.add(tile)
+                            # l.append(tile)
                 except IndexError:
                     print(i, j)
                     exit()
+        # l = sorted(l, key=lambda tile: tile.order)
+        # map_object.add(*l)
+
+        # if delta['bottom'] < 0:
+        #     for j in range(bounds['bottom'], old_bounds['bottom']):
+        #         for i in range(bounds['left'], bounds['right']):
+        #             tile = layer.get([i, j])
+        #             if tile:
+        #                 map_object.remove(tile)
+        # if delta['top'] > 0:
+        #     for j in range(old_bounds['top'], bounds['top']):
+        #         for i in range(bounds['left'], bounds['right']):
+        #             tile = layer.get([i, j])
+        #             if tile:
+        #                 # if tile._coordinates[0] == 0:
+        #                 print(tile)
+        #                 map_object.remove(tile)
+        # if delta['right'] < 0:
+        #     for j in range(bounds['togp'], bounds['bottom']):
+        #         for i in range(old_bounds['right'], bounds['right']):
+        #             tile = layer.get([i, j])
+        #             if tile:
+        #                 map_object.remove(tile)
+        # if delta['left'] > 0:
+        #     for j in range(bounds['top'], bounds['bottom']):
+        #         for i in range(bounds['left'], old_bounds['left']):
+        #             tile = layer.get([i, j])
+        #             if tile:
+        #                 map_object.remove(tile)
+
+
+        # if delta['left'] < 0:
+            # print('moving left')
+        # exit()
+        # for j in range(old_bounds['top'], bounds['top']):
+        #     for i in range(old_bounds['left'], bounds['left']):
+        #         tile = layer.get([i, j])
+        #         if tile and tile.get_id() > 0:
+        #             tile.rect = self.map_to_screen(tile)
+        #             if - tile.rect.width < tile.rect.x < dim[0] \
+        #                     and -tile.rect.height < tile.rect.y < dim[1] and tile.get_id() > 0:
+        #                 map_object.add(tile)
+        #
+        #
+

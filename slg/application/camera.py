@@ -24,9 +24,9 @@ class Camera(object):
 
     __edges = {'left': 0, 'right': 0, 'top': 0, 'bottom': 0}
 
-    (DEFAULT_MOVEMENT_SPEED, ) = (0.2, )
+    (DEFAULT_MOVEMENT_SPEED, ) = (0.4, )
     moving_x = moving_y = 0
-    movement_speed = 0.2
+    movement_speed = 0.4
     mouse_moving = False
     keyboard_moving_x, keyboard_moving_y = False, False
     (MOVEMENT_POSITIVE, MOVEMENT_NEGATIVE, MOVEMENT_STOP) = (1, -1, 0)
@@ -57,9 +57,9 @@ class Camera(object):
 
         self.movement_speed = ((self.__tile_width+self.__tile_height)/(FPS/TPS*2))
 
-        self.__edges['left'] = 0
+        self.__edges['left'] = -self.__map_width / 2
         self.__edges['top'] = 0
-        self.__edges['right'] = self._virtual_map_width
+        self.__edges['right'] = self.__map_width / 2
         self.__edges['bottom'] = self._virtual_map_height
 
     def m_speed(self):
@@ -86,50 +86,56 @@ class Camera(object):
     def update(self):
         if self.moving_x or self.moving_y:
 
-            self.coordinates[0] += self.moving_x * self.m_speed()
-            if self.coordinates[0] - self.m_speed() < self.__edges['left']:
-                self.coordinates[0] = 0
-            elif self.coordinates[0] + self.__width_in_tiles + self.m_speed() > self.__edges['right']:
-                self.coordinates[0] = self.__edges['right'] - self.__width_in_tiles
+            # self.coordinates[0] += self.moving_x * self.m_speed()
+            # if self.coordinates[0] - self.m_speed() < self.__edges['left']:
+            #     print(self.coordinates)
+            #     self.coordinates[0] = self.__edges['left']
+            # elif self.coordinates[0] + self.__width_in_tiles + self.m_speed() > self.__edges['right']:
+            #     print(self.coordinates)
+            #     self.coordinates[0] = self.__edges['right']
+            #
+            # self.coordinates[1] += self.moving_y * self.m_speed()
+            # if self.coordinates[1] - self.m_speed() < self.__edges['top']:
+            #     self.coordinates[1] = self.__edges['top']
+            # elif self.coordinates[1] + self.__height_in_tiles + self.m_speed() > self.__edges['bottom']:
+            #     self.coordinates[1] = self.__edges['bottom']
 
-            self.coordinates[1] += self.moving_y * self.m_speed() * (self.__tile_width / self.__tile_height)
-            if self.coordinates[1] - self.m_speed() < self.__edges['top']:
-                self.coordinates[1] = 0
-            elif self.coordinates[1] + self.__height_in_tiles + self.m_speed() > self.__edges['bottom']:
-                self.coordinates[1] = self.__edges['bottom'] - self.__height_in_tiles
-
-        half_map_width = self.__map_width * self.__tile_width / 2
-
-        self.__current_x = self.coordinates[0] * self.__tile_width - half_map_width + self.get_dimensions()[0]/2
-        if self.__current_x < self.__tile_width / 2 - half_map_width:
-            self.__current_x = self.__tile_width / 2 - half_map_width
-        self.__current_y = self.coordinates[1] * self.__tile_height
-        if self.__current_y < 0:
-            self.__current_y = 0
+            self.__current_x += self.m_speed() * self.moving_x * self.__tile_width
+            if self.__current_x < -self.__map_width * self.__tile_width / 2 + self.__tile_width / 2:
+                self.__current_x = -self.__map_width * self.__tile_width / 2 + self.__tile_width / 2
+            elif self.__current_x + self.__width > self.__map_width * self.__tile_width / 2 + self.__tile_width / 2:
+                self.__current_x = self.__map_width * self.__tile_width / 2 - self.__width + self.__tile_width / 2
+            self.__current_y += self.m_speed() * self.moving_y * self.__tile_height
+            if self.__current_y < 0:
+                self.__current_y = 0
+            elif self.__current_y + self.__height > self.__map_height * self.__tile_height:
+                self.__current_y = self.__map_height * self.__tile_height - self.__height
 
     def get_bounds(self):
+        topleft = (self.__current_x, self.__current_y)
+        topright = (self.__current_x + self.__width, self.__current_y)
+        bottomleft = (self.__current_x, self.__current_y + self.__height)
+        bottomright = (self.__current_x + self.__width, self.__current_y + self.__height)
 
-        half_map_width = self.__map_width * self.__tile_width / 2
-        x, y = self.__current_x + half_map_width, self.__current_y
         td = [self.__tile_width, self.__tile_height]
+        # map half width in tiles
+        mhwt = self.__map_width / 2
+        # map half height in tiles
+        mhht = self.__map_height / 2
 
-        topleft = (x, y)
-        top = int(self._renderer.screen_to_map(topleft, td)[0]) - 1
-        bottomleft = (x - half_map_width, y)
-        left = int(self._renderer.screen_to_map(bottomleft, td)[0]) - 1
+
+
+        left = math.ceil(topleft[0]/td[0] + topleft[1]/td[1] - 2)
+        right = math.ceil(bottomright[0]/td[0] + bottomright[1]/td[1] + 2)
+        top = math.ceil((topright[1]/td[1] - topright[0]/td[0] - 2))
+        bottom = math.ceil((bottomleft[1]/td[1] - bottomleft[0]/td[0] + 2))
+
         left = left if left > 0 else 0
-        topright = (x + self.__width/2, y)
-        right = int(self._renderer.screen_to_map(topright, td)[0]) + 1
         right = right if right < self.__map_width else self.__map_width
-        # exit()
-        print(left, right, x, y)
+        top = top if top > 0 else 0
+        bottom = bottom if bottom < self.__map_height else self.__map_height
 
-        top = 0
-        # left = 0
-        # right = 20
-        bottom = 40
         ret = {'left': left, 'right': right, 'top': top, 'bottom': bottom}
-        # print(ret)
         return ret
 
     def set_movement_speed(self, movement_speed=DEFAULT_MOVEMENT_SPEED):
@@ -140,10 +146,10 @@ class Camera(object):
             if manager.state != GAME_STATE_PAUSED:
                 if e.type == KEYDOWN:
                     if e.key == K_DOWN:
-                        self.set_moving_y(self.MOVEMENT_POSITIVE)
+                        self.set_moving_y(self.MOVEMENT_POSITIVE*2)
                         self.keyboard_moving_y = True
                     if e.key == K_UP:
-                        self.set_moving_y(self.MOVEMENT_NEGATIVE)
+                        self.set_moving_y(self.MOVEMENT_NEGATIVE*2)
                         self.keyboard_moving_y = True
                     if e.key == K_RIGHT:
                         self.set_moving_x(self.MOVEMENT_POSITIVE)
@@ -178,10 +184,10 @@ class Camera(object):
                 self.set_moving_x(self.MOVEMENT_STOP)
 
             if 0 <= mouse_pos[1] < 0 + padding and focused:
-                self.set_moving_y(self.MOVEMENT_NEGATIVE)
+                self.set_moving_y(self.MOVEMENT_NEGATIVE*2)
                 mouse_moving_y = True
             elif vp[1] >= mouse_pos[1] > vp[1] - padding and focused:
-                self.set_moving_y(self.MOVEMENT_POSITIVE)
+                self.set_moving_y(self.MOVEMENT_POSITIVE*2)
                 mouse_moving_y = True
             else:
                 self.set_moving_y(self.MOVEMENT_STOP)

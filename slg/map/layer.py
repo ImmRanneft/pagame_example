@@ -7,7 +7,7 @@ import slg.renderer.staggered
 from pygame.locals import *
 
 
-class Layer(pygame.sprite.Sprite):
+class Layer(object):
     """
     Simple layer, that holds all this tiles and determinates which of them have to be drawn depending in visible_area
     @type _name: str
@@ -17,23 +17,18 @@ class Layer(pygame.sprite.Sprite):
     """
 
     _name = ''
-
-    _order = 0
-    _layer = 'bg'
-    dirty = 0
-
-    _visible_area = {'left': 0, 'right': 0, 'top': 0, 'bottom': 0}
-
-    _container = [[]]
-    _dimensions = []
-    _tile_dimensions = []
-    image = None
-    rect = None
     _map_object = None
     _renderer = None
 
-    def __init__(self, *groups):
-        super().__init__(*groups)
+    def __init__(self):
+        super().__init__()
+        self._order = 0
+        self.dirty = 1
+        self._visible_area = {'left': 0, 'right': 0, 'top': 0, 'bottom': 0}
+        self._d_visible_area = {'left': 0, 'right': 0, 'top': 0, 'bottom': 0}
+        self._container = [[]]
+        self._dimensions = []
+        self._tile_dimensions = []
 
     # setters and getters
     def get_name(self):
@@ -50,13 +45,8 @@ class Layer(pygame.sprite.Sprite):
     def set_dimensions(self, dimensions, tile_dimensions):
         self._dimensions = dimensions
         self._tile_dimensions = tile_dimensions
-
         layer_width, layer_height = int(dimensions[0]), int(dimensions[1])
-        layer_surface_dimensions = self._renderer.calculate_surface_dimensions(dimensions, tile_dimensions)
-        self.image = pygame.Surface(layer_surface_dimensions, SRCALPHA | HWSURFACE)
-        self.rect = self.image.get_rect()
-
-        self._container = [[None for x in range(0, layer_height)] for x in range(0, layer_width)]
+        self._container = [None for x in range(0, layer_width*layer_height)]
 
     def get_dimensions(self):
         return self._dimensions
@@ -74,19 +64,22 @@ class Layer(pygame.sprite.Sprite):
         camera_bounds = self._renderer.get_camera_bounds()
         for key in camera_bounds.keys():
             if self._visible_area[key] != camera_bounds[key]:
+                self._d_visible_area[key] = camera_bounds[key] - self._visible_area[key]
                 self._visible_area[key] = camera_bounds[key]
                 self.dirty = 1
-        # if self.dirty > 0:
-            # self.dirty = 0
+                # print(self._d_visible_area)
+        if self.dirty > 0:
+            self.dirty = 0
             # print('draw')
         self._render()
 
     def _render(self):
         self._renderer.draw_map(self, self._map_object)
+        self._map_object.dirty = 1
 
     def append(self, tile, tile_x, tile_y):
         try:
-            self._container[tile_x][tile_y] = tile
+            self._container[self._dimensions[0]*tile_y+tile_x] = tile
         except IndexError:
             print('append_error:', tile_x, tile_y)
 
@@ -94,7 +87,7 @@ class Layer(pygame.sprite.Sprite):
         if coordinates is not None:
             i = coordinates[0]
             j = coordinates[1]
-            return self._container[i][j]
+            return self._container[self._dimensions[0]*j+i]
         else:
             return self._container
 

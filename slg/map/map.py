@@ -28,6 +28,8 @@ class Map(pygame.sprite.LayeredUpdates):
     _loader = None
     _renderer = None
 
+    dirty = 1
+
     _map_name = ''
     _tile_dimensions = [0, 0]
     _map_dimensions = [0, 0]
@@ -37,6 +39,7 @@ class Map(pygame.sprite.LayeredUpdates):
     def __init__(self, manager):
         super().__init__()
         self._manager = manager
+        self.l = []
 
     def load(self, map_name):
         self._map_name = map_name
@@ -92,9 +95,23 @@ class Map(pygame.sprite.LayeredUpdates):
         for layer in self.get_layers():
             layer.update()
 
+    def sort(self):
+        self.l = sorted(self.l, key=lambda spr: spr.order)
+
+    def empty(self):
+        self.l = []
+
+    def add(self, *sprites):
+        for sprite in sprites:
+            self.l.append(sprite)
+
+    def draw(self, surface):
+        blit = surface.blit
+        for sprite in self.l:
+            blit(sprite.image, sprite.rect)
+
 
 class MapLoadingThread(threading.Thread):
-
     def __init__(self, map_name, map_object, camera):
         self._map_name = map_name
         self._map_object = map_object
