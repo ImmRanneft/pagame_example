@@ -41,7 +41,7 @@ class MainMenuScene(AbstractScene):
                 self.handle_keypress(e.key, pygame.key.get_mods())
 
     def handle_keypress(self, key, modificated):
-        if key == K_m and modificated and pygame.KMOD_CTRL:
+        if key == K_m and modificated & pygame.KMOD_ALT:
             Selector(self._manager.get_display(), self.group)
         if key == K_F1:
             showMainText(self._manager.get_display(), self.group)

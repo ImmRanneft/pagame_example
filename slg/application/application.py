@@ -100,9 +100,9 @@ class Application(object):
                 if e.type == QUIT:
                     self._run = False
                 if e.type == KEYDOWN:
-                    if e.key == K_F4 and pygame.key.get_mods() and pygame.KMOD_ALT:
+                    if e.key == K_F4 and pygame.key.get_mods() & pygame.KMOD_ALT:
                         self._run = False
-                    if e.key == K_s and pygame.key.get_mods() and pygame.KMOD_ALT:
+                    if e.key == K_t and pygame.key.get_mods() & pygame.KMOD_ALT:
                         print(self.get_state())
             self._manager.handle(events)
             if self._scene:

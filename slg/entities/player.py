@@ -55,6 +55,7 @@ class Player(pygame.sprite.Sprite):
 
         self.rect = pygame.rect.Rect((0, 0), self.image.get_size())
         self.base_rect = pygame.rect.Rect((0, 0), self.image.get_size())
+        self.collide_rect = pygame.rect.Rect((0, 0), (self.image.get_size()))
 
         self.order = self.x + self.y + 3
 
@@ -72,45 +73,52 @@ class Player(pygame.sprite.Sprite):
         self.base_rect.y = self.y
         newrect = renderer.map_to_screen(self)
         self.base_rect = newrect
-        self.rect = renderer.adjust_with_cam(self)
+        self.rect = renderer.adjust_with_cam(self.base_rect)
+        self.collide_rect.x = self.rect.x
+        self.collide_rect.y = self.rect.y
 
     def update(self):
         next_x = self.x + self.moving_x * self.movement_speed
 
         next_y = self.y + self.moving_y * self.movement_speed
-        if not(math.ceil(next_x) == 4 and math.ceil(next_y) == 13):
-            self.x = next_x
-            self.y = next_y
+        # bouncerect = pygame.rect.Rect((4, 13), (64, 32))
+        # bouncerect = self._renderer.map_to_screen_simple(bouncerect)
+        # bouncerect = self._renderer.adjust_with_cam(bouncerect)
+        # if not(self.collide_rect.colliderect(bouncerect)):
+        self.x = next_x
+        self.y = next_y
         self.order = self.x + self.y + 3  # same as object layer
-        # camera_bounds = self._camera.get_bounds()
-        # if self.moving_x or self.moving_y:
-        #     dx = (self.moving_x * self.movement_speed)
-        #     dy = (self.moving_y * self.movement_speed)
-        #     print('char dy ', dy)
-        #     if not(camera_bounds['left'] + 2 < self.x) and self.moving_x == self._camera.MOVEMENT_NEGATIVE:
-        #         self._camera.set_moving_x(self._camera.MOVEMENT_NEGATIVE)
-        #         self._camera.set_movement_speed(self.movement_speed)
-        #         # self._camera.update()
-        #     if not(camera_bounds['right'] - 2 > self.x + self.get_dimensions()[0] / self.get_regular_tile_dimensions()[0]) \
-        #             and self.moving_x == self._camera.MOVEMENT_POSITIVE:
-        #         self._camera.set_moving_x(self._camera.MOVEMENT_POSITIVE)
-        #         self._camera.set_movement_speed(self.movement_speed)
-        #         self._camera.update()
-        #     if not(camera_bounds['top'] + 2 < self.y) and self.moving_y == self._camera.MOVEMENT_NEGATIVE:
-        #         self._camera.set_moving_y(self._camera.MOVEMENT_NEGATIVE)
-        #         self._camera.set_movement_speed(self.movement_speed)
-        #         self._camera.update()
-        #     if not(camera_bounds['bottom'] - 2 > self.y + self.get_dimensions()[1] / self.get_regular_tile_dimensions()[1] * 2) \
-        #             and self.moving_y == self._camera.MOVEMENT_POSITIVE:
-        #         self._camera.set_moving_y(self._camera.MOVEMENT_POSITIVE)
-        #         self._camera.set_movement_speed(self.movement_speed)
-        #         self._camera.update()
+
+        camera_dest = self._camera.get_dest()
+        camera_dim = self._camera.get_dimensions()
+        if self.rect.x < camera_dest[0] + 50:
+            self._camera.set_moving_x(self._camera.MOVEMENT_NEGATIVE)
+            self._camera.set_movement_speed(self.movement_speed)
+            self._camera.update()
+        if self.rect.x > camera_dest[0] + camera_dim[0] - 50:
+            self._camera.set_moving_x(self._camera.MOVEMENT_POSITIVE)
+            self._camera.set_movement_speed(self.movement_speed)
+            self._camera.update()
+        if self.rect.y < camera_dest[1] + 50:
+            self._camera.set_moving_y(self._camera.MOVEMENT_NEGATIVE)
+            # print(self.movement_speed, self._camera.movement_speed)
+            self._camera.set_movement_speed(self.movement_speed)
+            self._camera.update()
+        if self.rect.y > camera_dest[1] + camera_dim[1] - 50:
+            self._camera.set_moving_y(self._camera.MOVEMENT_POSITIVE)
+            self._camera.set_movement_speed(self.movement_speed)
+            self._camera.update()
         self.render()
 
     def handle_events(self, events):
         for e in events:
-            if e.type == KEYDOWN and e.key == K_p:
-                print(self.rect, self.x, self.y, self.order)
+            if e.type == KEYDOWN:
+                if e.key == K_p:
+                    print(self.rect, self.x, self.y, self.order)
+                if e.key == K_t and (pygame.key.get_mods() & (KMOD_ALT | KMOD_SHIFT)):
+                    self.x = 0
+                    self.y = 0
+                    break
             if self._manager.state != GAME_STATE_PAUSED:
                 if e.type == KEYDOWN:
                     if e.key == K_s:

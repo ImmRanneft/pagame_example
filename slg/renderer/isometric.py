@@ -22,13 +22,20 @@ class Isometric(AbstractRenderer):
         new_rectangle = pygame.rect.Rect((tile_x, tile_y), (drawable.base_rect.width, drawable.base_rect.height))
         return new_rectangle
 
-    def adjust_with_cam(self, drawable):
+    @staticmethod
+    def map_to_screen_simple(rect):
+        tile_x = (rect.x - rect.y) * rect.width / 2
+        tile_y = (rect.x + rect.y) * rect.height / 2
+        new_rectangle = pygame.rect.Rect((tile_x, tile_y), (rect.width, rect.height))
+        return new_rectangle
+
+    def adjust_with_cam(self, rect):
         [camera_offset_x,  camera_offset_y] = self.camera.get_dest()
-        x = drawable.base_rect.x
-        y = drawable.base_rect.y
+        x = rect.x
+        y = rect.y
         x -= camera_offset_x
         y -= camera_offset_y
-        new_rectangle = pygame.rect.Rect((x, y), (drawable.base_rect.width, drawable.base_rect.height))
+        new_rectangle = pygame.rect.Rect((x, y), (rect.width, rect.height))
         return new_rectangle
 
     @staticmethod
@@ -54,7 +61,7 @@ class Isometric(AbstractRenderer):
                 try:
                     tile = layer.get([i, j])
                     if tile and tile.get_id() > 0:
-                        tile.rect = self.adjust_with_cam(tile)
+                        tile.rect = self.adjust_with_cam(tile.base_rect)
                         if - tile.rect.width < tile.rect.x < dim[0] \
                                 and -tile.rect.height < tile.rect.y < dim[1] and tile.get_id() > 0:
                             map_object.add(tile)
