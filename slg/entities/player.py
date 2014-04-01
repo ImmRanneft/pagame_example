@@ -25,14 +25,14 @@ class Player(pygame.sprite.Sprite):
     moving_x = moving_y = 0
     _map_object = None
     directions = {
-        'west': 0,
-        'northwest': 1,
-        'north': 2,
-        'northeast': 3,
-        'east': 4,
-        'southeast': 5,
-        'south': 6,
-        'southwest': 7,
+        K_a & K_s: 'west',
+        K_a: 'northwest',
+        K_a & K_w: 'north',
+        K_w: 'northeast',
+        K_w & K_d: 'east',
+        K_d: 'southeast',
+        K_s & K_d: 'south',
+        K_s: 'southwest',
     }
 
 
@@ -43,7 +43,7 @@ class Player(pygame.sprite.Sprite):
     def __init__(self, *groups):
         super().__init__(*groups)
         self.manager = None
-
+        self.direction = 'west'
         self.x, self.y = 2, 0
         self.moving_x_key = 0
         self.moving_y_key = 0
@@ -74,12 +74,10 @@ class Player(pygame.sprite.Sprite):
         newrect = renderer.map_to_screen(self)
         self.base_rect = newrect
         self.rect = renderer.adjust_with_cam(self.base_rect)
-        self.collide_rect.x = self.rect.x
         self.collide_rect.y = self.rect.y
 
     def update(self):
         next_x = self.x + self.moving_x * self.movement_speed
-
         next_y = self.y + self.moving_y * self.movement_speed
         # bouncerect = pygame.rect.Rect((4, 13), (64, 32))
         # bouncerect = self._renderer.map_to_screen_simple(bouncerect)
@@ -88,34 +86,43 @@ class Player(pygame.sprite.Sprite):
         self.x = next_x
         self.y = next_y
         self.order = self.x + self.y + 3  # same as object layer
-
-        camera_dest = self._camera.get_dest()
-        camera_dim = self._camera.get_dimensions()
-        if self.rect.x < camera_dest[0] + 50:
-            self._camera.set_moving_x(self._camera.MOVEMENT_NEGATIVE)
-            self._camera.set_movement_speed(self.movement_speed)
-            self._camera.update()
-        if self.rect.x > camera_dest[0] + camera_dim[0] - 50:
-            self._camera.set_moving_x(self._camera.MOVEMENT_POSITIVE)
-            self._camera.set_movement_speed(self.movement_speed)
-            self._camera.update()
-        if self.rect.y < camera_dest[1] + 50:
-            self._camera.set_moving_y(self._camera.MOVEMENT_NEGATIVE)
-            # print(self.movement_speed, self._camera.movement_speed)
-            self._camera.set_movement_speed(self.movement_speed)
-            self._camera.update()
-        if self.rect.y > camera_dest[1] + camera_dim[1] - 50:
-            self._camera.set_moving_y(self._camera.MOVEMENT_POSITIVE)
-            self._camera.set_movement_speed(self.movement_speed)
-            self._camera.update()
+        if self.moving_x != self._camera.MOVEMENT_STOP or self.moving_y != self._camera.MOVEMENT_STOP:
+            camera_dim = self._camera.get_dimensions()
+            if self.rect.left < 0 + 50 and (self.moving_y == self._camera.MOVEMENT_POSITIVE
+                                            or self.moving_x == self._camera.MOVEMENT_NEGATIVE):
+                self._camera.set_moving_x(self._camera.MOVEMENT_NEGATIVE)
+                self._camera.set_movement_speed(self.movement_speed)
+                self._camera.update()
+            if self.rect.right > camera_dim[0] - 50 and (self.moving_y == self._camera.MOVEMENT_NEGATIVE
+                                                         or self.moving_x == self._camera.MOVEMENT_POSITIVE):
+                self._camera.set_moving_x(self._camera.MOVEMENT_POSITIVE)
+                self._camera.set_movement_speed(self.movement_speed)
+                self._camera.update()
+            if self.rect.top < 0 + 50 and self.moving_y == self._camera.MOVEMENT_NEGATIVE:
+                self._camera.set_moving_y(self._camera.MOVEMENT_NEGATIVE)
+                self._camera.set_movement_speed(self.movement_speed)
+                self._camera.update()
+            if self.rect.bottom > camera_dim[1] - 50 and self.moving_y == self._camera.MOVEMENT_POSITIVE:
+                self._camera.set_moving_y(self._camera.MOVEMENT_POSITIVE)
+                self._camera.set_movement_speed(self.movement_speed)
+                self._camera.update()
         self.render()
+
+    def __repr__(self):
+        return self.rect.__repr__() + "\r\n" + \
+               self.collide_rect.__repr__() + "\r\n" + \
+               self.base_rect.__repr__() + "\r\n" +\
+               str(self.x) + ' ' +\
+               str(self.y) + " " + self.direction
 
     def handle_events(self, events):
         for e in events:
             if e.type == KEYDOWN:
                 if e.key == K_p:
-                    print(self.rect, self.x, self.y, self.order)
-                if e.key == K_t and (pygame.key.get_mods() & (KMOD_ALT | KMOD_SHIFT)):
+                    print(self)
+                if e.key == K_c:
+                    print(self._camera.get_dest(), self.rect.x, self.rect.y)
+                if e.key == K_t and (pygame.key.get_mods() & KMOD_ALT) and (pygame.key.get_mods() & KMOD_SHIFT):
                     self.x = 0
                     self.y = 0
                     break
@@ -138,6 +145,7 @@ class Player(pygame.sprite.Sprite):
                         self.set_moving_y(self._camera.MOVEMENT_STOP)
                     if (e.key == K_a or e.key == K_d) and e.key == self.moving_x_key:
                         self.set_moving_x(self._camera.MOVEMENT_STOP)
+                self.direction = self.directions.get(self.moving_x_key & self.moving_y_key, 'west')
 
     def get_regular_tile_dimensions(self):
         return (64, 32)

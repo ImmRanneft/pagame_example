@@ -64,8 +64,8 @@ class GameScene(AbstractScene):
             ChangeState(GAME_STATE_PAUSED).post()
         if key == K_o:
             print(self.map_object)
-        if key == K_c:
-            print(self._manager.get_camera().get_dest(), self._manager.get_camera().get_dimensions(), self._manager.get_camera().get_bounds())
+        # if key == K_c:
+        #     print(self._manager.get_camera().get_dest(), self._manager.get_camera().get_dimensions(), self._manager.get_camera().get_bounds())
 
     def draw(self):
         # self.map_object.empty()
