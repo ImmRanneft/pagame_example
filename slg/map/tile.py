@@ -13,7 +13,7 @@ class Tile(pygame.sprite.Sprite):
         self.base_rect = None
         self._template = None
         self._coordinates = [0, 0]
-        self.order = 0
+        self._layer = 0
         super().__init__(*groups)
 
     def get_id(self):
@@ -21,7 +21,7 @@ class Tile(pygame.sprite.Sprite):
 
     def coordinates(self, coordinates: list, z=0):
         self._coordinates = coordinates
-        self.order = coordinates[0]+coordinates[1]+z
+        self._layer = coordinates[0]+coordinates[1]+z
 
     def get_coordinates(self):
         return self._coordinates
@@ -44,4 +44,4 @@ class Tile(pygame.sprite.Sprite):
     def __repr__(self):
         return super().__repr__() \
                + 'coords' + str(self._coordinates[0]) + ', ' + str(self._coordinates[1]) \
-               + ' order: ' + str(self.order) + "\r\n"
+               + ' order: ' + str(self._layer) + "\r\n"

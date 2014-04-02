@@ -44,6 +44,7 @@ class GameScene(AbstractScene):
     def set_map(self, map_object):
         self.map_object = map_object
         self.player.set_map(self.map_object)
+        self.map_object.add(self.player)
         self.renderer = map_object.get_renderer()
         self.camera = self._manager.get_camera()
 
@@ -68,18 +69,9 @@ class GameScene(AbstractScene):
         #     print(self._manager.get_camera().get_dest(), self._manager.get_camera().get_dimensions(), self._manager.get_camera().get_bounds())
 
     def draw(self):
-        # self.map_object.empty()
-        self.map_object.empty()
         self.map_object.update()
-        self.map_object.add(self.player)
         self.map_group.update()
-        self.map_object.sort()
-        # if self.map_object.dirty > 0:
-            # self.map_object.sort()
         self._manager.get_display().fill((0, 0, 0))
-            # self.map_object.dirty = 0
-        # self.map_object.clear(self._manager.get_display(), self._manager.get_display())
-        # if self._manager.state > GAME_STATE_PAUSED:
         self.map_object.draw(self._manager.get_display())
 
 

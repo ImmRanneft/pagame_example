@@ -5,7 +5,7 @@ import os
 from pygame.locals import *
 
 TPS = 0.25  # this is Tile Per Second Constant
-FPS = 60  # Frames per second
+FPS = 30  # Frames per second
 
 CONFIG_DIR = os.path.join(os.path.realpath(os.getcwd()), 'config')
 MAIN_CONFIG = os.path.join(CONFIG_DIR, 'main.ini')

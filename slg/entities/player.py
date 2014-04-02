@@ -35,7 +35,6 @@ class Player(pygame.sprite.Sprite):
         K_s: 'southwest',
     }
 
-
     @staticmethod
     def get_id():
         return 999999
@@ -57,7 +56,7 @@ class Player(pygame.sprite.Sprite):
         self.base_rect = pygame.rect.Rect((0, 0), self.image.get_size())
         self.collide_rect = pygame.rect.Rect((0, 0), (self.image.get_size()))
 
-        self.order = self.x + self.y + 3
+        self._layer = self.x + self.y + 3
 
     def set_manager(self, manager):
         self._manager = manager
@@ -79,13 +78,14 @@ class Player(pygame.sprite.Sprite):
     def update(self):
         next_x = self.x + self.moving_x * self.movement_speed
         next_y = self.y + self.moving_y * self.movement_speed
-        # bouncerect = pygame.rect.Rect((4, 13), (64, 32))
-        # bouncerect = self._renderer.map_to_screen_simple(bouncerect)
-        # bouncerect = self._renderer.adjust_with_cam(bouncerect)
-        # if not(self.collide_rect.colliderect(bouncerect)):
-        self.x = next_x
-        self.y = next_y
-        self.order = self.x + self.y + 3  # same as object layer
+
+        if self.canMove(next_x, next_y):
+            self.x = next_x
+            self.y = next_y
+            self._layer = self.x + self.y + 3  # same as object layer
+            self._map_object.change_layer(self, self._layer)
+        self.render()
+
         if self.moving_x != self._camera.MOVEMENT_STOP or self.moving_y != self._camera.MOVEMENT_STOP:
             camera_dim = self._camera.get_dimensions()
             if self.rect.left < 0 + 50 and (self.moving_y == self._camera.MOVEMENT_POSITIVE
@@ -106,14 +106,20 @@ class Player(pygame.sprite.Sprite):
                 self._camera.set_moving_y(self._camera.MOVEMENT_POSITIVE)
                 self._camera.set_movement_speed(self.movement_speed)
                 self._camera.update()
-        self.render()
+
+    def canMove(self, next_x, next_y):
+        if math.ceil(next_x + self.moving_x * 0.1) == 4 and math.ceil(next_y + self.moving_y * 0.1) == 13:
+            return False
+        return True
 
     def __repr__(self):
         return self.rect.__repr__() + "\r\n" + \
                self.collide_rect.__repr__() + "\r\n" + \
                self.base_rect.__repr__() + "\r\n" +\
                str(self.x) + ' ' +\
-               str(self.y) + " " + self.direction
+               str(self.y) + " " + \
+               str(self._layer) + " " + \
+               self.direction
 
     def handle_events(self, events):
         for e in events:

@@ -108,7 +108,7 @@ class Tmx(object):
                 tile_template = tileset.get_tile_template(tile_gid)
                 [tile_width, tile_height] = tile_template.get_dimensions()
                 tile = Tile()
-                tile._layer = layer.get_order()
+                # tile._layer = layer.get_order()
                 tile.set_template(tile_template)
                 tile.coordinates(coordinates, layer.order)
                 tile.base_rect = self._map_object.get_renderer().map_to_screen(tile)

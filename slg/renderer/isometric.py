@@ -69,48 +69,48 @@ class Isometric(AbstractRenderer):
                 except IndexError:
                     print(i, j)
                     exit()
-        # l = sorted(l, key=lambda tile: tile.order)
-        # map_object.add(*l)
 
-        # if delta['bottom'] < 0:
-        #     for j in range(bounds['bottom'], old_bounds['bottom']):
-        #         for i in range(bounds['left'], bounds['right']):
-        #             tile = layer.get([i, j])
-        #             if tile:
-        #                 map_object.remove(tile)
-        # if delta['top'] > 0:
-        #     for j in range(old_bounds['top'], bounds['top']):
-        #         for i in range(bounds['left'], bounds['right']):
-        #             tile = layer.get([i, j])
-        #             if tile:
-        #                 # if tile._coordinates[0] == 0:
-        #                 print(tile)
-        #                 map_object.remove(tile)
-        # if delta['right'] < 0:
-        #     for j in range(bounds['togp'], bounds['bottom']):
-        #         for i in range(old_bounds['right'], bounds['right']):
-        #             tile = layer.get([i, j])
-        #             if tile:
-        #                 map_object.remove(tile)
-        # if delta['left'] > 0:
-        #     for j in range(bounds['top'], bounds['bottom']):
-        #         for i in range(bounds['left'], old_bounds['left']):
-        #             tile = layer.get([i, j])
-        #             if tile:
-        #                 map_object.remove(tile)
+        # here we have strange logic:
+        # if we are moving left to right, then it`s obvious that delta left have to be positive
+        # so we kill tiles that left outside left edge of camera
+        # we have our loop like this from top to bottom and from left to right,
+        # old_bounds['left'] becomes left, and bounds['left'] becomes right
 
+        # just collect the sprites, and then kill them in one shot... i mean method call
+        sprites_to_kill = list()
 
-        # if delta['left'] < 0:
-            # print('moving left')
-        # exit()
-        # for j in range(old_bounds['top'], bounds['top']):
-        #     for i in range(old_bounds['left'], bounds['left']):
-        #         tile = layer.get([i, j])
-        #         if tile and tile.get_id() > 0:
-        #             tile.rect = self.map_to_screen(tile)
-        #             if - tile.rect.width < tile.rect.x < dim[0] \
-        #                     and -tile.rect.height < tile.rect.y < dim[1] and tile.get_id() > 0:
-        #                 map_object.add(tile)
-        #
-        #
-
+        # ok, we`re going left to right
+        if delta['left'] > 0:
+            for j in range(bounds['top'], bounds['bottom']):
+                for i in range(old_bounds['left'], bounds['left']):
+                    tile = layer.get([i, j])
+                    if tile:
+                        sprites_to_kill.append(tile)
+        # going right to left
+        # so bounds['right'] becomes left and old_bounds['right'] becomes right
+        if delta['left'] < 0:
+            for j in range(bounds['top'], bounds['bottom']):
+                for i in range(bounds['right'], old_bounds['right']):
+                    tile = layer.get([i, j])
+                    if tile:
+                        sprites_to_kill.append(tile)
+        # now we`re going top to bottom, this means top row have to be removed
+        # and bounds['top'] becomes bottom and old_bounds['top'] becomes top
+        if delta['top'] > 0:
+            for j in range(old_bounds['top'], bounds['top']):
+                for i in range(bounds['left'], bounds['right']):
+                    tile = layer.get([i, j])
+                    if tile:
+                        sprites_to_kill.append(tile)
+        # versa
+        if delta['top'] < 0:
+            for j in range(bounds['bottom'], old_bounds['bottom']):
+                for i in range(bounds['left'], bounds['right']):
+                    tile = layer.get([i, j])
+                    if tile:
+                        sprites_to_kill.append(tile)
+        if len(sprites_to_kill) > 0:
+            # print(map_object)
+            # print(len(sprites_to_kill), ' was removed')
+            map_object.remove(sprites_to_kill)
+            # print(map_object)

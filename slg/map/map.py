@@ -98,17 +98,17 @@ class Map(pygame.sprite.LayeredUpdates):
     def sort(self):
         self.l = sorted(self.l, key=lambda spr: spr.order)
 
-    def empty(self):
-        self.l = []
+    # def empty(self):
+    #     self.l = []
 
-    def add(self, *sprites):
-        for sprite in sprites:
-            self.l.append(sprite)
+    # def add(self, *sprites):
+    #     for sprite in sprites:
+    #         self.l.append(sprite)
 
-    def draw(self, surface):
-        blit = surface.blit
-        for sprite in self.l:
-            blit(sprite.image, sprite.rect)
+    # def draw(self, surface):
+    #     blit = surface.blit
+    #     for sprite in self.l:
+    #         blit(sprite.image, sprite.rect)
 
 
 class MapLoadingThread(threading.Thread):

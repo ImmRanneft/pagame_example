@@ -66,16 +66,10 @@ class Layer(object):
             if self._visible_area[key] != camera_bounds[key]:
                 self._d_visible_area[key] = camera_bounds[key] - self._visible_area[key]
                 self._visible_area[key] = camera_bounds[key]
-                self.dirty = 1
-                # print(self._d_visible_area)
-        if self.dirty > 0:
-            self.dirty = 0
-            # print('draw')
         self._render()
 
     def _render(self):
         self._renderer.draw_map(self, self._map_object)
-        self._map_object.dirty = 1
 
     def append(self, tile, tile_x, tile_y):
         try:
