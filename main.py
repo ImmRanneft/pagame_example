@@ -11,9 +11,15 @@ import pygame.rect
 from slg.application.application import Application
 from slg.locals import *
 import cProfile
+import math
+
 
 def main():
-
+    # next = [3.4, 3.2, 3.1, 4.4, 4.2]
+    # for next_x in next:
+    #     floor = math.floor if next_x+0.5 - int(next_x) < 0.5 else math.ceil
+    #     print(floor(next_x))
+    # exit()
     # pygame.init()
     # display = pygame.display.set_mode((400, 300))
     # display.fill((0, 0, 0))

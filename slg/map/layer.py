@@ -29,6 +29,7 @@ class Layer(object):
         self._container = [[]]
         self._dimensions = []
         self._tile_dimensions = []
+        self.type = 'simple'
 
     # setters and getters
     def get_name(self):
@@ -73,7 +74,11 @@ class Layer(object):
 
     def append(self, tile, tile_x, tile_y):
         try:
-            self._container[self._dimensions[0]*tile_y+tile_x] = tile
+            if self.type == 'collider':
+                self._map_object.update_collider(tile_x, tile_y)
+                print(tile_x, tile_y)
+            else:
+                self._container[self._dimensions[0]*tile_y+tile_x] = tile
         except IndexError:
             print('append_error:', tile_x, tile_y)
 

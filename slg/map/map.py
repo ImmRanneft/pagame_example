@@ -40,6 +40,8 @@ class Map(pygame.sprite.LayeredUpdates):
         super().__init__()
         self._manager = manager
         self.l = []
+        self.object_layer = 1
+        self._collider = dict()
 
     def load(self, map_name):
         self._map_name = map_name
@@ -59,6 +61,15 @@ class Map(pygame.sprite.LayeredUpdates):
         if self._map_name != '':
             self._loader = Tmx()
         return self._loader
+
+    def update_collider(self, x, y, delete=False):
+        if delete is False:
+            self._collider[self._map_dimensions[0]*y+x] = 1
+        else:
+            del self._collider[self._map_dimensions[0]*y+x]
+
+    def check_collide(self, x, y):
+        return self._collider.get(self._map_dimensions[0]*y+x, 0)
 
     def switch_renderer(self, renderer):
         if renderer == 'staggered':

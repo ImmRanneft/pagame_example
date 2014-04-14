@@ -13,21 +13,22 @@ class Isometric(AbstractRenderer):
         [offset_x, offset_y] = drawable.get_offset()
 
         #this is additional offset for tiles that greater or lesser than regular tile
-        dy = (current_height - 2 * offset_y - regular_height)
-        dx = (current_width - 2 * offset_x) - regular_width
+        dy = current_height - 2 * offset_y - regular_height
+        dx = current_width - 2 * offset_x - regular_width
 
-        tile_x = (x - y) * regular_width / 2 - offset_x - dx
-        tile_y = (x + y) * regular_height / 2 - offset_y - dy
+        tile_x, tile_y = self.mts(x, y, regular_width, regular_height)
+
+        tile_x -= offset_x + dx
+        tile_y -= offset_y + dy
 
         new_rectangle = pygame.rect.Rect((tile_x, tile_y), (drawable.base_rect.width, drawable.base_rect.height))
         return new_rectangle
 
     @staticmethod
-    def map_to_screen_simple(rect):
-        tile_x = (rect.x - rect.y) * rect.width / 2
-        tile_y = (rect.x + rect.y) * rect.height / 2
-        new_rectangle = pygame.rect.Rect((tile_x, tile_y), (rect.width, rect.height))
-        return new_rectangle
+    def mts(x, y, tw, th):
+        screen_x = (x - y) * tw / 2
+        screen_y = (x + y) * th / 2
+        return screen_x, screen_y
 
     def adjust_with_cam(self, rect):
         [camera_offset_x,  camera_offset_y] = self.camera.get_dest()
@@ -39,12 +40,12 @@ class Isometric(AbstractRenderer):
         return new_rectangle
 
     @staticmethod
-    def screen_to_map(coordinates, tile_dimensions):
-        twh = tile_dimensions[0]/2
-        thh = tile_dimensions[1]/2
-        x = (coordinates[0] / twh + coordinates[1] / thh) / 2
-        y = (coordinates[1] / thh - (coordinates[0] / twh)) / 2
-        return [x, y]
+    def screen_to_map(x, y, tw, th):
+        twh = tw/2
+        thh = th/2
+        map_x = (x / twh + y / thh) / 2
+        map_y = (y / thh - x / twh) / 2
+        return [map_x, map_y]
 
     def draw_map(self, layer, map_object):
         bounds = self.camera.get_bounds()

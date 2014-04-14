@@ -44,7 +44,6 @@ class GameScene(AbstractScene):
     def set_map(self, map_object):
         self.map_object = map_object
         self.player.set_map(self.map_object)
-        self.map_object.add(self.player)
         self.renderer = map_object.get_renderer()
         self.camera = self._manager.get_camera()
 
@@ -71,8 +70,15 @@ class GameScene(AbstractScene):
     def draw(self):
         self.map_object.update()
         self.map_group.update()
+        # surf = pygame.Surface((32, 16), HWSURFACE | SRCALPHA)
+        # surf.fill((0, 255, 0, 128))
+        # rect = self.player.collide_rect
+        # print(rect)
+        # rect = self.map_object.get_renderer().map_to_screen_simple(rect)
+        # rect = self.map_object.get_renderer().adjust_with_cam(rect)
         self._manager.get_display().fill((0, 0, 0))
         self.map_object.draw(self._manager.get_display())
+        # self._manager.get_display().blit(surf, rect)
 
 
 class MapUpdatingThread(threading.Thread):

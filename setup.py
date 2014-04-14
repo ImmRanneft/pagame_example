@@ -2,10 +2,8 @@ from cx_Freeze import setup, Executable
 import sys
 # Dependencies are automatically detected, but it might need
 # fine tuning.
-company_name = 'slg_old'
+company_name = 'slg'
 product_name = 'pg'
-
-
 
 bdist_msi_options = {
     'add_to_path': False,
@@ -17,7 +15,7 @@ buildOptions = dict(packages=[], excludes=['html', 'email', 'socket', 'bz2', 'ss
 
 base = 'Win32GUI' if sys.platform == 'win32' else None
 tname = 'pg.exe' if sys.platform == 'win32' else 'pg'
-version = '0.1.2'
+version = '0.1.3'
 executables = [
     Executable('main.py', base=base, targetName=tname, appendScriptToExe=True, compress=True,)
 ]

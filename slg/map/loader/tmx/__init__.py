@@ -83,15 +83,26 @@ class Tmx(object):
         i = 0
         for raw_layer in layers:
             layer = Layer()
+            layer.set_order(i)
+            self.load_layer_properties(raw_layer, layer)
             layer.name = raw_layer.attributes['name'].value
             self._map_object.add_layer(layer)
             layer_width = int(raw_layer.attributes['width'].value)
             layer_height = int(raw_layer.attributes['height'].value)
             layer.set_renderer(self._map_object.get_renderer())
             layer.set_dimensions([layer_width, layer_height], self.__tile_dimensions)
-            layer.set_order(i)
             self.__load_tiles(layer, raw_layer)
             i += 1
+
+    def load_layer_properties(self, raw_layer, layer):
+        raw_properties = raw_layer.getElementsByTagName('property')
+        for prop in raw_properties:
+            print(prop.attributes['name'].value)
+            if prop.attributes['name'].value == 'collider':
+                layer.type = 'collider'
+            elif prop.attributes['name'].value == 'objectslayer':
+                self._map_object.object_layer = layer.get_order()
+                layer.type = 'objects'
 
     def get_layers(self):
         return self.__layers
