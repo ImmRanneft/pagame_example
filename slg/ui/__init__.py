@@ -1,4 +1,4 @@
-__author__ = 'Den'
+__author__ = 'den'
+
 
 from slg.ui.textwidget import TextWidget
-from slg.ui import *

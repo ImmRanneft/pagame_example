@@ -1,67 +1,47 @@
-__author__ = 'Den'
-
-import pygame
+__author__ = 'den'
 
 
-class Tile(object):
+import pygame.rect
+import pygame.sprite
 
-    __coordinates = [0, 0]
-    __display_coordinates = [0, 0]
-    __rectangle = [0, 0, 0, 0]
-    __dimensions = [0, 0]
-    __offset = [0, 0]
-    __template = None
 
-    def __init__(self, template):
-        self.__template = template
-        self.image = self.get_image()
+class Tile(pygame.sprite.Sprite):
 
-    def get_template(self):
-        return self.__template
-
-    def coordinates(self, coordinates):
-        self.__coordinates = coordinates
-
-    def get_coordinates(self):
-        return self.__coordinates
-
-    def set_rect(self, rect):
-        self.__rect = rect
-        return self
-
-    def get_rect(self):
-        return self.__rect
-
-    def get_x(self):
-        tile_x = self.__template.get_dimensions()[0] * self.get_coordinates()[0] + \
-                 int(self.get_coordinates()[1]) % 2 * self.__template.get_dimensions()[0]/2
-        return tile_x
-
-    def get_y(self):
-        regular = self.__template.get_regular_tile_dimensions()
-        current = self.__template.get_dimensions()
-        offset = self.__template.get_offset()
-        divider = (current[1] - 2 * offset[1]) / regular[1] * 2
-        tile_y = self.__template.get_dimensions()[1] / divider * self.get_coordinates()[1]
-        dy = current[1] - regular[1] - offset[1] + offset[1] * self.get_coordinates()[1]
-        tile_y -= dy
-        return tile_y
-
-    def draw(self, surface, renderer):
-        pixelCoordinates = renderer.translate(self)
-        surface.blit(self.get_image(), pixelCoordinates, self.get_rect())
+    def __init__(self, *groups):
+        self.image = None
+        self.rect = None
+        self.base_rect = None
+        self._template = None
+        self._coordinates = [0, 0]
+        self._layer = 0
+        super().__init__(*groups)
 
     def get_id(self):
-        return self.__template.gid
+        return self._template.gid
 
-    def get_regular_tile_dimensions(self):
-        return self.__template.get_regular_tile_dimensions()
+    def coordinates(self, coordinates: list, z=0):
+        self._coordinates = coordinates
+        self._layer = coordinates[0]+coordinates[1]+z
+
+    def get_coordinates(self):
+        return self._coordinates
 
     def get_dimensions(self):
-        return self.__template.get_dimensions()
+        return self._template.get_dimensions()
 
     def get_offset(self):
-        return self.__template.get_offset()
+        return self._template.get_offset()
 
-    def get_image(self):
-        return self.__template.get_image()
+    def get_regular_tile_dimensions(self):
+        return self._template.get_regular_tile_dimensions()
+
+    def set_template(self, template):
+        self._template = template
+        self.image = template.get_image()
+        self.base_rect = template.get_rect()
+        self.rect = template.get_rect()
+
+    def __repr__(self):
+        return super().__repr__() \
+               + 'coords' + str(self._coordinates[0]) + ', ' + str(self._coordinates[1]) \
+               + ' order: ' + str(self._layer) + "\r\n"
