@@ -111,3 +111,6 @@ class Application(object):
                 pygame.display.update()
                 pygame.display.set_caption("FPS: %.2f" % (self._clock.get_fps())
                            + 'ticks: %.2f' % (self._clock.tick(FPS)))
+
+    def get_time(self):
+        return self._clock.get_time()

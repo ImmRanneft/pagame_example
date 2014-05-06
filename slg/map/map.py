@@ -43,6 +43,9 @@ class Map(pygame.sprite.LayeredUpdates):
         self.object_layer = 1
         self._collider = dict()
 
+    def get_manager(self):
+        return self._manager
+
     def load(self, map_name):
         self._map_name = map_name
         self._guess_loader().load(self)

@@ -36,6 +36,9 @@ class Manager(object):
     def del_scene(self, key):
         self._scenes[key] = None
 
+    def get_time(self):
+        return self._application.get_time()
+
     def handle(self, events):
         for e in events:
             if e.type == EVENT_CHANGE_STATE:
