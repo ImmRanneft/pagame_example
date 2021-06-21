@@ -63,7 +63,7 @@ class Isometric(AbstractRenderer):
                     tile = layer.get([i, j])
                     if tile and tile.get_id() > 0:
                         tile.rect = self.adjust_with_cam(tile.base_rect)
-                        if - tile.rect.width < tile.rect.x < dim[0] \
+                        if -tile.rect.width < tile.rect.x < dim[0] \
                                 and -tile.rect.height < tile.rect.y < dim[1] and tile.get_id() > 0:
                             map_object.add(tile)
                             # l.append(tile)

@@ -30,4 +30,5 @@ class GameSceneGroup(pygame.sprite.OrderedUpdates):
                 mouse_pos = pygame.mouse.get_pos()
                 for sprite in self.sprites():
                     if sprite.rect.collidepoint(*mouse_pos):
-                        sprite.events['click'](e, mouse_pos = mouse_pos)
+                        if hasattr(sprite, 'events'):
+                            sprite.events['click'](e, mouse_pos = mouse_pos)

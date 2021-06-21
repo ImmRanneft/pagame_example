@@ -1,7 +1,7 @@
 __author__ = 'Den'
 
 import pygame
-from pygame.time import Clock
+from pygame.time import Clock, get_ticks
 from pygame.locals import *
 
 import slg.map.map
@@ -64,6 +64,7 @@ class Application(object):
         self._camera = Camera(self._display.get_size())
         self._clock = Clock()
         self.set_scene(self._manager.get_scene(MainMenuScene))
+        LoadMap('iso1.tmx').post()
 
     def get_display(self):
         return self._display
@@ -113,4 +114,4 @@ class Application(object):
                            + 'ticks: %.2f' % (self._clock.tick(FPS)))
 
     def get_time(self):
-        return self._clock.get_time()
+        return get_ticks()

@@ -112,7 +112,10 @@ class Tmx(object):
         l_w, l_h = int(raw_layer.attributes['width'].value), int(raw_layer.attributes['height'].value)
         x, y = 0, 0
         for raw_tile in tiles:
-            tile_gid = int(raw_tile.attributes['gid'].value)
+            try:
+                tile_gid = int(raw_tile.attributes['gid'].value)
+            except:
+                tile_gid = 0
             if tile_gid > 0:
                 coordinates = [x, y]
                 tileset = self.__sets[self.__sets_ranges[tile_gid]]

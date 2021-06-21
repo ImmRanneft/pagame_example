@@ -80,36 +80,41 @@ class Camera(object):
     def get_dest(self):
         return self.__current_x, self.__current_y
 
+    def set_dest(self, x, y):
+        self.__current_x = x
+        self.__current_y = y
+        self.update()
+
+    def set_dest_to(self, object):
+        [obj_x, obj_y] = object.get_coordinates()
+        obj_x = (obj_x * self.__tile_width / 2) + (obj_x * self.__tile_height)
+        obj_y = (obj_y * self.__tile_width / 2) + (obj_y * self.__tile_height / 2)
+        self.__current_y = obj_y - self.__height
+        self.__current_x = obj_x - self.__width / 2 - self.__height / 2
+        self.check_bounds_x()
+        self.check_bounds_y()
+
     def get_dimensions(self):
         return self.__width, self.__height
 
+    def check_bounds_x(self):
+        if self.__current_x < -self.__map_width * self.__tile_width / 2 + self.__tile_width / 2:
+            self.__current_x = -self.__map_width * self.__tile_width / 2 + self.__tile_width / 2
+        elif self.__current_x + self.__width > self.__map_width * self.__tile_width / 2 + self.__tile_width / 2:
+            self.__current_x = self.__map_width * self.__tile_width / 2 - self.__width + self.__tile_width / 2
+
+    def check_bounds_y(self):
+        if self.__current_y < 0:
+            self.__current_y = 0
+        elif self.__current_y + self.__height > self.__map_height * self.__tile_height:
+            self.__current_y = self.__map_height * self.__tile_height - self.__height
+
     def update(self):
         if self.moving_x or self.moving_y:
-
-            # self.coordinates[0] += self.moving_x * self.m_speed()
-            # if self.coordinates[0] - self.m_speed() < self.__edges['left']:
-            #     print(self.coordinates)
-            #     self.coordinates[0] = self.__edges['left']
-            # elif self.coordinates[0] + self.__width_in_tiles + self.m_speed() > self.__edges['right']:
-            #     print(self.coordinates)
-            #     self.coordinates[0] = self.__edges['right']
-            #
-            # self.coordinates[1] += self.moving_y * self.m_speed()
-            # if self.coordinates[1] - self.m_speed() < self.__edges['top']:
-            #     self.coordinates[1] = self.__edges['top']
-            # elif self.coordinates[1] + self.__height_in_tiles + self.m_speed() > self.__edges['bottom']:
-            #     self.coordinates[1] = self.__edges['bottom']
-
             self.__current_x += self.m_speed() * self.moving_x * self.__tile_width
-            if self.__current_x < -self.__map_width * self.__tile_width / 2 + self.__tile_width / 2:
-                self.__current_x = -self.__map_width * self.__tile_width / 2 + self.__tile_width / 2
-            elif self.__current_x + self.__width > self.__map_width * self.__tile_width / 2 + self.__tile_width / 2:
-                self.__current_x = self.__map_width * self.__tile_width / 2 - self.__width + self.__tile_width / 2
+            self.check_bounds_x()
             self.__current_y += self.m_speed() * self.moving_y * self.__tile_height
-            if self.__current_y < 0:
-                self.__current_y = 0
-            elif self.__current_y + self.__height > self.__map_height * self.__tile_height:
-                self.__current_y = self.__map_height * self.__tile_height - self.__height
+            self.check_bounds_y()
 
     def get_bounds(self):
         topleft = (self.__current_x, self.__current_y)

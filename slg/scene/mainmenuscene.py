@@ -1,19 +1,17 @@
 __author__ = 'Den'
 
 import codecs
-import os
 
 import pygame
 import pygame.rect
 
-import slg.ui.text
 import slg.ui.listview
-
-from slg.scene.abstractscene import AbstractScene
+import slg.ui.text
 from slg.event.changestate import ChangeState
-from slg.scene.group.gamescenegroup import GameSceneGroup
-from slg.map.selector import Selector
 from slg.locals import *
+from slg.map.selector import Selector
+from slg.scene.abstractscene import AbstractScene
+from slg.scene.group.gamescenegroup import GameSceneGroup
 
 
 class MainMenuScene(AbstractScene):

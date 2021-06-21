@@ -8,10 +8,13 @@ from slg.event.changestate import ChangeState
 from slg.event.mainmenu import MainMenu
 
 
-class GameMenu(Text):
+class DebugInfo(Text):
     def __init__(self, surface, manager, *groups):
         self.manager = manager
-        string_to_render = "Нажми меня, если хочешь в главное меню!"
+        strings = list()
+        strings.append(str(manager.get_camera().get_dest()))
+        strings.append(str(manager.get_scene(slg.scene.gamescene.GameScene).player))
+        string_to_render = "\n".join(strings)
         styles = {'font_size': 18, 'font': 'calibrii', 'text_color': (255, 255, 255), 'border': (5, 5),
                   'align': (ALIGN_LEFT, ALIGN_TOP), 'bgcolor': (100, 100, 100)}
         super().__init__(string_to_render, surface, *groups, **styles)

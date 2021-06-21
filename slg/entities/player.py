@@ -8,6 +8,7 @@ import pygame.sprite
 import pygame.rect
 from pygame.locals import *
 
+import slg.scene.gamescene
 import slg.application.camera
 import slg.renderer.staggered
 
@@ -35,14 +36,14 @@ class Player(pygame.sprite.Sprite):
     DIRECTION_SOUTHWEST = 7
 
     directions = {
-        K_a + K_s: DIRECTION_WEST,
-        K_a: DIRECTION_NORTHWEST,
-        K_a + K_w: DIRECTION_NORTH,
-        K_w: DIRECTION_NORTHEAST,
-        K_w + K_d: DIRECTION_EAST,
-        K_d: DIRECTION_SOUTHEAST,
-        K_s + K_d: DIRECTION_SOUTH,
-        K_s: DIRECTION_SOUTHWEST,
+        K_s: DIRECTION_SOUTH,
+        K_a: DIRECTION_WEST,
+        K_d: DIRECTION_EAST,
+        K_w: DIRECTION_NORTH,
+        K_w + K_a: DIRECTION_NORTHWEST,
+        K_w + K_d: DIRECTION_NORTHEAST,
+        K_s + K_d: DIRECTION_SOUTHEAST,
+        K_s + K_a: DIRECTION_SOUTHWEST,
     }
 
     @staticmethod
@@ -54,23 +55,23 @@ class Player(pygame.sprite.Sprite):
         self.manager = None
         self.dir = 0
         self.direction = self.DIRECTION_SOUTH
-        self.x, self.y = 0, 13
+        self.is_moving = False
+        self.x, self.y = 5, 13
         self.next_x = self.x
         self.next_y = self.y
-        self.moving_x_key = 0
-        self.moving_y_key = 0
+        self.moving_x_key = self.old_moving_x_key = 0
+        self.moving_y_key = self.old_moving_y_key = 0
 
-        self.max_animate_step = 10
-        self.min_animate_step = 0
-        self.animate_step = self.min_animate_step
+        self.max_moving_animate_step = 11
+        self.min_moving_animate_step = 4
+        self.min_idle_animate_step = 0
+        self.max_idle_animate_step = 3
+        self.animate_step = self.min_idle_animate_step
         self.last_animate_step_time = 0
 
-        self.sprite = image = pygame.image.load(os.path.join(DATA_DIR, 'monsters', 'zombie.png'))
+        self.sprite = pygame.image.load(os.path.join(DATA_DIR, 'monsters', 'zombie.png'))
         self.sprite.convert_alpha()
         self.image = pygame.Surface((128, 128), SRCALPHA | HWSURFACE)
-        # self.cl = pygame.Surface((32, 64), SRCALPHA | HWSURFACE)
-        # self.cl.fill((255, 0, 0, 128))
-        # self.image.blit(self.cl, (48, 40))
         self.image.blit(self.sprite, (0, 0), (0, self.direction*128, 128, 128))
 
         self.rect = pygame.rect.Rect((0, 0), self.image.get_size())
@@ -125,7 +126,7 @@ class Player(pygame.sprite.Sprite):
             str(self.x) + ' ' +\
             str(self.y) + " " + \
             str(self._layer) + " " + \
-            self.direction
+            str(self.direction)
 
     def handle_events(self, events):
         for e in events:
@@ -134,74 +135,86 @@ class Player(pygame.sprite.Sprite):
                     print(self, self.directions)
                 if e.key == K_c:
                     print(self._camera.get_dest(), self.rect.x, self.rect.y)
+                    self._camera.set_dest_to(self)
+                    self._map_object.update()
                 if e.key == K_t and (pygame.key.get_mods() & KMOD_ALT) and (pygame.key.get_mods() & KMOD_SHIFT):
                     self.x = 0
                     self.y = 0
                     break
             if self._manager.state != GAME_STATE_PAUSED:
-                need_change = False
-                if (e.type == KEYDOWN or e.type == KEYUP) and \
-                        (e.key == K_a or e.key == K_s or e.key == K_s or e.key == K_w):
-                    need_change = False
                 if e.type == KEYDOWN:
-                    if e.key == K_s:
-                        self.set_moving_y(self._camera.MOVEMENT_POSITIVE)
-                        if self.moving_x != self._camera.MOVEMENT_STOP:
-                            self.moving_x = self._camera.MOVEMENT_STOP
-                        if self.moving_y_key != e.key:
-                            need_change = True
+                    if e.key == K_s or e.key == K_w:
                         self.moving_y_key = e.key
-                    if e.key == K_w:
-                        self.set_moving_y(self._camera.MOVEMENT_NEGATIVE)
-                        if self.moving_x != self._camera.MOVEMENT_STOP:
-                            self.moving_x = self._camera.MOVEMENT_STOP
-                        if self.moving_y_key != e.key:
-                            need_change = True
-                        self.moving_y_key = e.key
-                    if e.key == K_d:
-                        if self.moving_y != self._camera.MOVEMENT_STOP:
-                            self.moving_y = self._camera.MOVEMENT_STOP
-                        self.set_moving_x(self._camera.MOVEMENT_POSITIVE)
-                        if self.moving_x_key != e.key:
-                            need_change = True
+                        self.is_moving = True
+                    if e.key == K_d or e.key == K_a:
                         self.moving_x_key = e.key
-                    if e.key == K_a:
-                        if self.moving_y != self._camera.MOVEMENT_STOP:
-                            self.moving_y = self._camera.MOVEMENT_STOP
-                        self.set_moving_x(self._camera.MOVEMENT_NEGATIVE)
-                        if self.moving_x_key != e.key:
-                            need_change = True
-                        self.moving_x_key = e.key
+                        self.is_moving = True
                 if e.type == KEYUP:
                     if (e.key == K_w or e.key == K_s) and e.key == self.moving_y_key:
-                        self.set_moving_y(self._camera.MOVEMENT_STOP)
+                        self.old_moving_y_key = self.moving_y_key
                         self.moving_y_key = 0
-                        # need_change = True
                     if (e.key == K_a or e.key == K_d) and e.key == self.moving_x_key:
-                        self.set_moving_x(self._camera.MOVEMENT_STOP)
+                        self.old_moving_x_key = self.moving_x_key
                         self.moving_x_key = 0
-                if need_change:
-                        self.change_direction()
+
+                if self.moving_x_key == 0 and self.moving_y_key == 0:
+                    self.is_moving = False
+
+                self.change_direction()
+
+                if self.is_moving:
+                    if self.direction == self.DIRECTION_SOUTH:
+                        self.moving_x = self._camera.MOVEMENT_POSITIVE
+                        self.moving_y = self._camera.MOVEMENT_POSITIVE
+                    elif self.direction == self.DIRECTION_NORTH:
+                        self.moving_x = self._camera.MOVEMENT_NEGATIVE
+                        self.moving_y = self._camera.MOVEMENT_NEGATIVE
+                    elif self.direction == self.DIRECTION_NORTHWEST:
+                        self.moving_x = self._camera.MOVEMENT_NEGATIVE
+                        self.moving_y = self._camera.MOVEMENT_STOP
+                    elif self.direction == self.DIRECTION_NORTHEAST:
+                        self.moving_x = self._camera.MOVEMENT_STOP
+                        self.moving_y = self._camera.MOVEMENT_NEGATIVE
+                    elif self.direction == self.DIRECTION_SOUTHWEST:
+                        self.moving_x = self._camera.MOVEMENT_STOP
+                        self.moving_y = self._camera.MOVEMENT_POSITIVE
+                    elif self.direction == self.DIRECTION_SOUTHEAST:
+                        self.moving_x = self._camera.MOVEMENT_POSITIVE
+                        self.moving_y = self._camera.MOVEMENT_STOP
+                    elif self.direction == self.DIRECTION_EAST:
+                        self.moving_x = self._camera.MOVEMENT_POSITIVE
+                        self.moving_y = self._camera.MOVEMENT_NEGATIVE
+                    elif self.direction == self.DIRECTION_WEST:
+                        self.moving_x = self._camera.MOVEMENT_NEGATIVE
+                        self.moving_y = self._camera.MOVEMENT_POSITIVE
+                else:
+                    self.moving_x = self._camera.MOVEMENT_STOP
+                    self.moving_y = self._camera.MOVEMENT_STOP
+                self.animate_me()
 
     def change_direction(self):
         self.dir = self.moving_x_key + self.moving_y_key
+        if not self.is_moving:
+            self.dir = self.old_moving_x_key + self.old_moving_y_key
         self.direction = self.directions.get(self.dir, self.DIRECTION_SOUTH)
-        self.animate_me()
 
     def animate_me(self):
-        if self.moving_x != self._camera.MOVEMENT_STOP or self.moving_y != self._camera.MOVEMENT_STOP:
-            time = self._manager.get_time()
-            if self.min_animate_step < self.animate_step < self.max_animate_step:
-                self.animate_step = self.min_animate_step
-            if time > self.last_animate_step_time + 500:
-                self.last_animate_step_time = time
-                self.animate_step += 1
-                if self.animate_step > self.max_animate_step:
-                    self.animate_step = self.min_animate_step
+        if self.moving_x or self.moving_y:
+            min_animate_step = self.min_moving_animate_step
+            max_animate_step = self.max_moving_animate_step
+            animation_time = 80
         else:
-            self.animate_step = 0
+            min_animate_step = self.min_idle_animate_step
+            max_animate_step = self.max_idle_animate_step
+            animation_time = 160
+        time = self._manager.get_time()
+        if time > self.last_animate_step_time + animation_time:
+            self.last_animate_step_time = time
+            self.animate_step += 1
+            if self.animate_step > max_animate_step:
+                self.animate_step = min_animate_step
         self.image.fill((255, 255, 255, 0))
-        self.image.blit(self.sprite, (0, 0), (0, self.direction*128, 128, 128))
+        self.image.blit(self.sprite, (0, 0), (self.animate_step*128, self.direction*128, 128, 128))
 
     def update_camera(self):
         if self.moving_x != self._camera.MOVEMENT_STOP or self.moving_y != self._camera.MOVEMENT_STOP:
